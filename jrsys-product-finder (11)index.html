@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>捷而思 · 資安產品探索器</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #030712;
+    --surface: #0d1117;
+    --surface2: #161b22;
+    --border: #21262d;
+    --accent: #00d4ff;
+    --accent2: #0066ff;
+    --accent3: #7c3aed;
+    --success: #00ff88;
+    --warn: #ffaa00;
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --text-dim: #484f58;
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+    --glow-strong: 0 0 40px rgba(0,212,255,0.5), 0 0 80px rgba(0,102,255,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridScroll 20s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes gridScroll {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(60px); }
+  }
+
+  /* Particles */
+  .particle-field {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    animation: float var(--dur) var(--delay) infinite ease-in-out;
+  }
+
+  @keyframes float {
+    0%, 100% { opacity: 0; transform: translateY(100vh) translateX(0); }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.2; }
+    100% { opacity: 0; transform: translateY(-10vh) translateX(var(--drift)); }
+  }
+
+  /* Main wrapper */
+  #app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  header {
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(3,7,18,0.8);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .logo-inner {
+    position: absolute;
+    inset: 6px;
+    background: var(--bg);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+
+  .logo-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 500;
+    margin-left: 2px;
+  }
+
+  .header-badge {
+    margin-left: auto;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent);
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  /* Screens */
+  .screen {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== INTRO SCREEN ===== */
+  .intro-content {
+    text-align: center;
+    max-width: 680px;
+  }
+
+  .intro-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .intro-eyebrow::before, .intro-eyebrow::after {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent));
+  }
+
+  .intro-eyebrow::after { transform: scaleX(-1); }
+
+  .intro-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 70%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 30px rgba(0,212,255,0.3));
+  }
+
+  .intro-subtitle {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .intro-desc {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  .intro-features {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+
+  .intro-feature {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .feature-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .btn-start {
+    position: relative;
+    padding: 18px 52px;
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--bg);
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    overflow: hidden;
+  }
+
+  .btn-start::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .btn-start:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow-strong);
+  }
+
+  .btn-start:hover::before { opacity: 1; }
+
+  .btn-start::after {
+    content: ' →';
+  }
+
+  /* Floating shields deco */
+  .deco-ring {
+    position: absolute;
+    border: 1px solid rgba(0,212,255,0.1);
+    border-radius: 50%;
+    animation: pulse-ring 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.05); }
+  }
+
+  /* ===== QUIZ SCREEN ===== */
+  .quiz-container {
+    width: 100%;
+    max-width: 720px;
+  }
+
+  /* Progress */
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .progress-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+  }
+
+  .progress-count {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: visible;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: -4px;
+    width: 11px;
+    height: 11px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent), transparent);
+  }
+
+  .q-category {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+
+  .q-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .q-text {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  .q-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+
+  /* Options */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .options-grid.cols-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .options-grid.cols-3 .option-btn {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .options-grid.cols-3 .option-icon-wrap {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .options-grid, .options-grid.cols-3 { grid-template-columns: 1fr; }
+    .options-grid.cols-3 .option-btn { flex-direction: row; align-items: flex-start; }
+  }
+
+  .option-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    color: var(--text);
+  }
+
+  .option-btn:hover {
+    border-color: rgba(0,212,255,0.5);
+    background: rgba(0,212,255,0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,212,255,0.15);
+  }
+
+  .option-btn.selected {
+    border-color: var(--accent);
+    background: rgba(0,212,255,0.1);
+    box-shadow: 0 0 0 2px rgba(0,212,255,0.3);
+  }
+
+  .option-btn.selected .option-icon-wrap {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .option-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: all 0.25s;
+  }
+
+  .option-content { flex: 1; }
+
+  .option-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .option-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .custom-input {
+    margin-top: 6px;
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .custom-input:focus {
+    border-color: rgba(0,212,255,0.5);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+  }
+
+  .custom-input::placeholder { color: var(--text-dim); }
+
+  .option-check {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--bg);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .option-btn.selected .option-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Nav buttons */
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .btn-back {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .btn-back:hover {
+    border-color: var(--text-muted);
+    color: var(--text);
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    color: var(--bg);
+    padding: 14px 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .btn-next.enabled {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .btn-next.enabled:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow);
+  }
+
+  /* Hint dots */
+  .hint-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 24px;
+  }
+
+  .hint-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+
+  .hint-dot.done { background: var(--accent); }
+  .hint-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); transform: scale(1.3); }
+
+  /* ===== RESULT SCREEN ===== */
+  .result-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.3);
+    color: var(--success);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+
+  .result-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 900;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .result-desc {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* Product cards */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 960px;
+    width: 100%;
+    margin-bottom: 40px;
+  }
+
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    animation: cardReveal 0.5s ease both;
+  }
+
+  @keyframes cardReveal {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .product-card:nth-child(2) { animation-delay: 0.1s; }
+  .product-card:nth-child(3) { animation-delay: 0.2s; }
+  .product-card:nth-child(4) { animation-delay: 0.3s; }
+
+  .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .product-card:hover {
+    border-color: rgba(0,212,255,0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 40px rgba(0,212,255,0.15);
+  }
+
+  .product-card:hover::before { opacity: 1; }
+
+  .product-card.primary {
+    border-color: rgba(0,212,255,0.5);
+    background: rgba(0,212,255,0.04);
+  }
+
+  .product-card.primary::before { opacity: 1; }
+
+  .match-label {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+
+  .product-icon {
+    font-size: 36px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .product-name {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .product-name-en {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  .product-summary {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    font-weight: 300;
+  }
+
+  .product-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .product-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    transition: gap 0.2s;
+  }
+
+  .product-card:hover .product-link { gap: 12px; }
+
+  .product-match-bar {
+    margin-bottom: 16px;
+  }
+
+  .match-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 6px;
+  }
+
+  .match-bar-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .match-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 2px;
+    transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width: 0%;
+  }
+
+  /* Profile pill */
+  .profile-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    padding: 12px 24px;
+    margin-bottom: 48px;
+  }
+
+  .profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent2), var(--accent3));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .profile-info { text-align: left; }
+
+  .profile-role {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .profile-org {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Restart button */
+  .btn-restart {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 14px 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+  }
+
+  .btn-restart:hover {
+    border-color: var(--text-muted);
+    color: var(--text);
+    transform: translateY(-2px);
+  }
+
+  /* ===== BOTTOM ACTION BAR ===== */
+  .result-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-share {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent);
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+  }
+
+  .btn-share:hover {
+    background: rgba(0,212,255,0.15);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--glow);
+  }
+
+  .btn-share.copied {
+    background: rgba(0,255,136,0.1);
+    border-color: rgba(0,255,136,0.4);
+    color: var(--success);
+  }
+
+  /* ===== CONTACT FORM ===== */
+  .contact-section {
+    width: 100%;
+    max-width: 640px;
+    margin-bottom: 40px;
+    animation: fadeIn 0.6s ease 0.4s both;
+  }
+
+  .contact-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 24px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--text);
+  }
+
+  .contact-toggle.open { border-radius: 8px 8px 0 0; border-color: rgba(0,212,255,0.4); }
+  .contact-toggle:hover { border-color: rgba(0,212,255,0.4); background: rgba(0,212,255,0.04); }
+
+  .contact-toggle-left { display: flex; align-items: center; gap: 14px; }
+
+  .contact-toggle-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent3));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+
+  .contact-toggle-text strong { display: block; font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+  .contact-toggle-text span { font-size: 12px; color: var(--text-muted); }
+
+  .contact-chevron { font-size: 18px; color: var(--text-muted); transition: transform 0.3s; }
+  .contact-chevron.open { transform: rotate(180deg); }
+
+  .contact-form-wrap {
+    background: var(--surface);
+    border: 1px solid rgba(0,212,255,0.4);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 28px;
+    display: none;
+  }
+
+  .contact-form-wrap.open { display: block; animation: fadeIn 0.3s ease; }
+
+  .contact-form-wrap::before {
+    content: '';
+    display: block;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent), transparent);
+    margin-bottom: 24px;
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--text-muted); text-transform: uppercase;
+  }
+
+  .form-input, .form-textarea {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+
+  .form-input:focus, .form-textarea:focus {
+    border-color: rgba(0,212,255,0.5);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+  }
+
+  .form-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+  .form-input::placeholder, .form-textarea::placeholder { color: var(--text-dim); }
+
+  .form-note { font-size: 11px; color: var(--text-muted); margin-bottom: 20px; display: flex; align-items: center; gap: 6px; }
+
+  /* Pre-filled info */
+  .prefilled-info {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+
+  .prefilled-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .prefilled-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .prefilled-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .prefilled-chip span {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none; border-radius: 4px;
+    color: var(--bg);
+    font-family: 'Orbitron', monospace;
+    font-size: 13px; font-weight: 700; letter-spacing: 2px;
+    cursor: pointer; transition: all 0.3s;
+  }
+
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: var(--glow-strong); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .form-success { text-align: center; padding: 20px; display: none; }
+  .form-success.show { display: block; animation: fadeIn 0.4s ease; }
+  .form-success-icon { font-size: 40px; margin-bottom: 12px; }
+  .form-success-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--success); }
+  .form-success-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface);
+    border: 1px solid rgba(0,212,255,0.4);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; letter-spacing: 1px;
+    padding: 12px 24px;
+    border-radius: 40px;
+    z-index: 9999;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s;
+    opacity: 0; pointer-events: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  @media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+    .result-actions { flex-direction: column; align-items: center; }
+  }
+
+  /* ===== CONTACT GATE SCREEN ===== */
+  .gate-container {
+    width: 100%;
+    max-width: 560px;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .gate-icon {
+    font-size: 52px;
+    margin-bottom: 20px;
+    display: block;
+    animation: bounceIn 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes bounceIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .gate-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--success);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .gate-eyebrow::before, .gate-eyebrow::after {
+    content: '';
+    width: 30px;
+    height: 1px;
+    background: var(--success);
+    opacity: 0.5;
+  }
+
+  .gate-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, #fff 40%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .gate-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+
+  .gate-form {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+  }
+
+  .gate-form::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent), transparent);
+  }
+
+  .gate-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .gate-field { display: flex; flex-direction: column; gap: 6px; }
+
+  .gate-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .gate-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+
+  .gate-input:focus {
+    border-color: rgba(0,212,255,0.5);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+  }
+
+  .gate-input.error { border-color: #ff4d4d; }
+  .gate-input::placeholder { color: var(--text-dim); }
+
+  .gate-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    margin-top: 4px;
+  }
+
+  .gate-submit {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none;
+    border-radius: 6px;
+    color: var(--bg);
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .gate-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow-strong);
+  }
+
+  .gate-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  @media (max-width: 600px) {
+    .gate-row { grid-template-columns: 1fr; }
+    .gate-form { padding: 20px; }
+  }
+  .analyzing-screen {
+    text-align: center;
+  }
+
+  .hex-loader {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 32px;
+    position: relative;
+    animation: spin 3s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hex-outer {
+    width: 80px;
+    height: 80px;
+    border: 2px solid transparent;
+    border-top-color: var(--accent);
+    border-right-color: var(--accent2);
+    border-radius: 50%;
+  }
+
+  .hex-inner {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    border: 2px solid transparent;
+    border-bottom-color: var(--accent3);
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite reverse;
+  }
+
+  .analyze-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    animation: blink 1s ease infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .question-card { padding: 24px; }
+    header { padding: 16px 20px; }
+    .products-grid { grid-template-columns: 1fr; }
+    .profile-pill { flex-direction: column; text-align: center; }
+    .profile-info { text-align: center; }
+  }
+
+  /* Scanline overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .corner-deco {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+  }
+
+  .corner-deco.tl { top: 12px; left: 12px; border-top: 1px solid var(--accent); border-left: 1px solid var(--accent); }
+  .corner-deco.tr { top: 12px; right: 12px; border-top: 1px solid var(--accent); border-right: 1px solid var(--accent); }
+  .corner-deco.bl { bottom: 12px; left: 12px; border-bottom: 1px solid var(--accent); border-left: 1px solid var(--accent); }
+  .corner-deco.br { bottom: 12px; right: 12px; border-bottom: 1px solid var(--accent); border-right: 1px solid var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="particle-field" id="particles"></div>
+
+<div id="app">
+  <header>
+    <div class="logo-mark"><div class="logo-inner"></div></div>
+    <div>
+      <div class="logo-text">JRSYS</div>
+      <div class="logo-sub">捷而思股份有限公司</div>
+    </div>
+    <div class="header-badge">PRODUCT FINDER v1.0</div>
+  </header>
+
+  <!-- INTRO SCREEN -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-content">
+      <div class="intro-eyebrow">資安產品探索器</div>
+      <h1 class="intro-title">找到最適合<br>您的資安方案</h1>
+      <p class="intro-subtitle">30 秒互動診斷，精準推薦</p>
+      <p class="intro-desc">
+        透過幾個簡單問題，我們將分析您的組織需求、資安挑戰與環境特性，<br>
+        為您精準推薦捷而思最適合的資安產品組合。
+      </p>
+      <div class="intro-features">
+        <div class="intro-feature"><div class="feature-dot"></div> 6 個情境問題</div>
+        <div class="intro-feature"><div class="feature-dot"></div> 智慧配對演算法</div>
+        <div class="intro-feature"><div class="feature-dot"></div> 即時產品推薦</div>
+        <div class="intro-feature"><div class="feature-dot"></div> 無需註冊</div>
+      </div>
+      <button class="btn-start" onclick="startQuiz()">開始探索</button>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-container">
+      <div class="progress-header">
+        <span class="progress-label">PROGRESS</span>
+        <span class="progress-count" id="progress-count">1 / 6</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+      </div>
+
+      <div class="question-card" style="position:relative;">
+        <div class="corner-deco tl"></div>
+        <div class="corner-deco tr"></div>
+        <div class="corner-deco bl"></div>
+        <div class="corner-deco br"></div>
+        <div class="q-category" id="q-category"></div>
+        <span class="q-icon" id="q-icon"></span>
+        <div class="q-text" id="q-text"></div>
+        <div class="q-sub" id="q-sub"></div>
+      </div>
+
+      <div class="options-grid" id="options-grid"></div>
+
+      <div class="quiz-nav">
+        <button class="btn-back" id="btn-back" onclick="prevQuestion()">← 上一題</button>
+        <button class="btn-next" id="btn-next" onclick="nextQuestion()">NEXT</button>
+      </div>
+
+      <div class="hint-dots" id="hint-dots"></div>
+    </div>
+  </div>
+
+  <!-- ANALYZING SCREEN -->
+  <div class="screen" id="screen-analyzing">
+    <div class="analyzing-screen">
+      <div class="hex-loader">
+        <div class="hex-outer"></div>
+        <div class="hex-inner"></div>
+      </div>
+      <div class="analyze-text">ANALYZING YOUR PROFILE...</div>
+    </div>
+  </div>
+
+  <!-- CONTACT GATE SCREEN -->
+  <div class="screen" id="screen-gate">
+    <div class="gate-container">
+      <div class="gate-icon">🔐</div>
+      <div class="gate-eyebrow">分析完成 · 即將顯示結果</div>
+      <h2 class="gate-title">留下聯絡資訊<br>解鎖您的專屬推薦</h2>
+      <p class="gate-desc">捷而思顧問將根據您的分析結果，提供更深入的產品說明與報價建議。</p>
+      <div class="gate-form">
+        <div class="gate-row">
+          <div class="gate-field">
+            <label class="gate-label">姓名 *</label>
+            <input class="gate-input" id="g-name" type="text" placeholder="您的姓名">
+          </div>
+          <div class="gate-field">
+            <label class="gate-label">職稱</label>
+            <input class="gate-input" id="g-jobtitle" type="text" placeholder="資安主管 / IT 工程師">
+          </div>
+        </div>
+        <div class="gate-row">
+          <div class="gate-field">
+            <label class="gate-label">公司名稱 *</label>
+            <input class="gate-input" id="g-company" type="text" placeholder="貴公司名稱">
+          </div>
+          <div class="gate-field">
+            <label class="gate-label">聯絡 Email *</label>
+            <input class="gate-input" id="g-email" type="email" placeholder="your@company.com">
+          </div>
+        </div>
+        <div class="gate-row">
+          <div class="gate-field">
+            <label class="gate-label">聯絡電話 *</label>
+            <input class="gate-input" id="g-phone" type="tel" placeholder="02-xxxx-xxxx / 09xx-xxx-xxx">
+          </div>
+          <div class="gate-field"></div>
+        </div>
+        <div class="gate-note">🔒 資料僅供捷而思業務團隊聯繫，不會對外揭露。</div>
+        <button class="gate-submit" id="gate-submit-btn" onclick="gateSubmit()">查看我的推薦方案 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div class="screen" id="screen-result">
+    <div class="result-header">
+      <div class="result-badge">✦ 分析完成</div>
+      <h2 class="result-title" id="result-title">您的推薦方案</h2>
+      <p class="result-desc" id="result-desc"></p>
+    </div>
+
+    <div class="profile-pill" id="profile-pill">
+      <div class="profile-avatar" id="profile-avatar"></div>
+      <div class="profile-info">
+        <div class="profile-role" id="profile-role"></div>
+        <div class="profile-org" id="profile-org"></div>
+      </div>
+    </div>
+
+    <div class="products-grid" id="products-grid"></div>
+
+    <!-- Share + Restart buttons -->
+    <div class="result-actions">
+      <button class="btn-share" id="btn-copy" onclick="copyShareText()">
+        <span>📋</span> 複製推薦結果
+      </button>
+      <button class="btn-share" onclick="shareNative()">
+        <span>↗</span> 分享此頁面
+      </button>
+      <button class="btn-restart" onclick="restart()">↺ 重新診斷</button>
+    </div>
+
+    <!-- Contact Form accordion -->
+    <div class="contact-section">
+      <button class="contact-toggle" id="contact-toggle" onclick="toggleContact()">
+        <div class="contact-toggle-left">
+          <div class="contact-toggle-icon">📬</div>
+          <div class="contact-toggle-text">
+            <strong>索取專業諮詢</strong>
+            <span>補充說明需求，捷而思顧問將在 1 個工作天內與您聯繫</span>
+          </div>
+        </div>
+        <div class="contact-chevron" id="contact-chevron">▾</div>
+      </button>
+      <div class="contact-form-wrap" id="contact-form-wrap">
+        <div class="form-inner" id="form-inner">
+          <!-- Pre-filled info display -->
+          <div class="prefilled-info" id="prefilled-info">
+            <div class="prefilled-label">以下資訊將一併送出</div>
+            <div class="prefilled-fields" id="prefilled-fields"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group full">
+              <label class="form-label">補充說明（選填）</label>
+              <textarea class="form-textarea" id="f-note" placeholder="請描述您的需求或想了解的產品..."></textarea>
+            </div>
+          </div>
+          <div class="form-note">🔒 您的資料僅供捷而思業務團隊聯繫使用，不會對外分享。</div>
+          <button class="btn-submit" onclick="submitForm()">送出諮詢需求 →</button>
+        </div>
+        <div class="form-success" id="form-success">
+          <div class="form-success-icon">✅</div>
+          <div class="form-success-title">感謝您的詢問！</div>
+          <div class="form-success-desc">我們已收到您的諮詢需求，<br>捷而思顧問將在 1 個工作天內透過 Email 與您聯繫。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== DATA ====================
+const questions = [
+  {
+    id: 'industry',
+    category: 'ORGANIZATION',
+    icon: '🏢',
+    text: '您所在的產業或組織類型是？',
+    sub: '不同產業有不同的資安法規要求與威脅樣態',
+    options: [
+      { icon: '🏦', title: '金融業', desc: '銀行、保險、證券、支付', value: 'finance', tags: ['finance','compliance'] },
+      { icon: '🏥', title: '醫療 / 政府', desc: '醫院、診所、公務機關', value: 'gov-health', tags: ['gov','compliance','identity'] },
+      { icon: '🏭', title: '製造 / 工業', desc: 'OT/IT 融合、智慧工廠', value: 'manufacturing', tags: ['iot','ot','device'] },
+      { icon: '💻', title: '科技 / 服務業', desc: 'IT 公司、電商、服務業', value: 'tech', tags: ['identity','pam','zero-trust'] },
+      { icon: '✏️', title: '其他', desc: '請填寫您的產業', value: 'other', tags: ['identity','compliance'], isCustom: true, customKey: 'industry_custom' },
+    ]
+  },
+  {
+    id: 'size',
+    category: 'SCALE',
+    icon: '👥',
+    text: '貴組織的員工規模大約是？',
+    sub: '規模影響部署方式與管理複雜度',
+    options: [
+      { icon: '🌱', title: '小型 (< 50 人)', desc: '輕量、快速導入優先', value: 'small', tags: ['cloud','simple'] },
+      { icon: '🌿', title: '中型 (50–300 人)', desc: '需要集中管理機制', value: 'medium', tags: ['identity','mfa'] },
+      { icon: '🌳', title: '大型 (300–1000 人)', desc: '跨部門協作、稽核需求', value: 'large', tags: ['pam','compliance','audit'] },
+      { icon: '🌐', title: '企業級 (1000+ 人)', desc: '複雜環境、高度合規需求', value: 'enterprise', tags: ['pam','zero-trust','compliance','kms'] },
+    ]
+  },
+  {
+    id: 'pain',
+    category: 'PAIN POINT',
+    icon: '⚠️',
+    text: '您目前最擔心的資安問題是？',
+    sub: '選擇最符合您當前挑戰的選項',
+    options: [
+      { icon: '🔑', title: '帳號 / 密碼安全', desc: '擔心帳號被盜用、弱密碼風險', value: 'identity', tags: ['otp','mobile-id','identity'] },
+      { icon: '👁️', title: '內部人員威脅', desc: '特權帳號濫用、內鬼風險', value: 'insider', tags: ['pam','audit'] },
+      { icon: '📋', title: '法規遵循稽核', desc: '個資法、金管會等合規要求', value: 'compliance', tags: ['compliance','audit','ca'] },
+      { icon: '🌐', title: '遠端連線安全', desc: '在家工作、零信任架構', value: 'remote', tags: ['zero-trust','privconnect','vpn'] },
+    ]
+  },
+  {
+    id: 'env',
+    category: 'ENVIRONMENT',
+    icon: '🖥️',
+    text: '您的 IT 環境架構主要是？',
+    sub: '環境架構決定部署方式與整合複雜度',
+    options: [
+      { icon: '☁️', title: '純雲端', desc: 'AWS / Azure / GCP 等公有雲', value: 'cloud', tags: ['cloud','zero-trust'] },
+      { icon: '🏗️', title: '本地端 (On-Premise)', desc: '自建機房、內部伺服器', value: 'onprem', tags: ['pam','ca','kms'] },
+      { icon: '🔀', title: '混合雲', desc: '雲地混合、多環境並存', value: 'hybrid', tags: ['zero-trust','identity','kms'] },
+      { icon: '📡', title: '物聯網 / OT 設備', desc: '工控系統、感測器、IoT 裝置', value: 'iot', tags: ['iot','device','uas'] },
+      { icon: '✏️', title: '其他', desc: '請填寫您的環境架構', value: 'env_other', tags: ['identity','compliance'], isCustom: true, customKey: 'env_custom' },
+      { icon: '🤔', title: '不清楚', desc: '目前尚未確定架構方向', value: 'env_unclear', tags: ['identity','zero-trust','compliance'] },
+    ]
+  },
+  {
+    id: 'goal',
+    category: 'GOAL',
+    icon: '🎯',
+    text: '導入資安方案後，您最希望達成的目標是？',
+    sub: '明確目標有助於找到最合適的解決方案',
+    options: [
+      { icon: '🛡️', title: '強化身分驗證', desc: '讓登入更安全、更便利', value: 'mfa', tags: ['otp','mobile-id','identity'] },
+      { icon: '🔍', title: '可視化監控稽核', desc: '看得見、查得到、留存證據', value: 'audit', tags: ['pam','audit','privacy'] },
+      { icon: '📜', title: '數位簽章 / 文件安全', desc: '電子簽核、防偽、不可否認性', value: 'doc', tags: ['pdfsign','ca','timestamp'] },
+      { icon: '🔒', title: '零信任架構', desc: '永不信任、持續驗證', value: 'zt', tags: ['zero-trust','privconnect'] },
+    ]
+  },
+  {
+    id: 'urgency',
+    category: 'TIMELINE',
+    icon: '⏱️',
+    text: '您希望的導入時程是？',
+    sub: '時程影響方案選擇與優先順序',
+    options: [
+      { icon: '⚡', title: '立即 (1 個月內)', desc: '急迫需求，需快速上線', value: 'urgent', tags: ['otp','mobile-id','simple'] },
+      { icon: '📅', title: '短期 (1–3 個月)', desc: '規劃中，已有初步共識', value: 'short', tags: ['pam','identity','zero-trust'] },
+      { icon: '🗓️', title: '中期 (3–6 個月)', desc: '正在評估，需完整 PoC', value: 'medium', tags: ['kms','ca','compliance'] },
+      { icon: '🔭', title: '長期規劃 (6 個月以上)', desc: '策略性佈局，整體架構重塑', value: 'long', tags: ['zero-trust','kms','ca','zt'] },
+    ]
+  }
+];
+
+const products = [
+  {
+    id: 'otp',
+    name: '一次性動態密碼系統',
+    nameEn: 'GOTP',
+    icon: '🔐',
+    summary: '每次登入使用不同密碼，有效防止帳號遭到盜用。支援手機 App、硬體 Token 等多種形式，快速導入無需改變工作習慣。',
+    tags: ['MFA', '身分驗證', '快速導入', '手機 OTP'],
+    url: 'https://www.jrsys.com.tw/Page/GeneralContent/GeneralContentList.aspx?TopCategoryNo=491&GeneralContentCategoryNo=565',
+    keywords: ['otp','identity','mfa','simple','finance','compliance']
+  },
+  {
+    id: 'pam',
+    name: '特權帳號管理系統',
+    nameEn: 'PAM',
+    icon: '👑',
+    summary: '管理所有特權帳號的存取、側錄與稽核。防止內鬼濫用、確保操作可追溯，滿足合規稽核要求。',
+    tags: ['特權管理', '操作側錄', '帳號稽核', '合規'],
+    url: 'https://www.jrsys.com.tw/Page/GeneralContent/GeneralContentList.aspx?TopCategoryNo=491&GeneralContentCategoryNo=577',
+    keywords: ['pam','audit','insider','compliance','large','enterprise','onprem']
+  },
+  {
+    id: 'mobile-id',
+    name: '行動身份認證',
+    nameEn: 'Mobile ID',
+    icon: '📱',
+    summary: '以手機作為身分憑證，結合生物辨識，實現免密碼的安全登入體驗，兼顧安全與便利性。',
+    tags: ['行動驗證', '生物辨識', '免密碼', '使用者體驗'],
+    url: 'https://www.jrsys.com.tw/Page/GeneralContent/GeneralContentList.aspx?TopCategoryNo=491&GeneralContentCategoryNo=595',
+    keywords: ['mobile-id','identity','mfa','otp','finance','gov','urgent']
+  },
+  {
+    id: 'zero-trust',
+    name: '零信任安全平台 ZTP',
+    nameEn: 'Zero Trust Platform',
+    icon: '🛡️',
+    summary: '貫徹「永不信任、持續驗證」原則，對每次存取請求動態評估風險，保護混合雲與遠端工作環境。',
+    tags: ['零信任', '持續驗證', '混合雲', '遠端工作'],
+    url: 'https://www.jrsys.com.tw/Page/GeneralContent/GeneralContentList.aspx?TopCategoryNo=491&GeneralContentCategoryNo=632',
+    keywords: ['zero-trust','remote','hybrid','cloud','enterprise','zt','long']
+  },
+  {
+    id: 'pdfsign',
+    name: '行動簽核 / 安全文件',
+    nameEn: 'PDFSign',
+    icon: '✍️',
+    summary: '電子文件簽核、數位簽章與防偽機制，讓合約、報告等重要文件具備不可否認性與法律效力。',
+    tags: ['電子簽章', '文件安全', '法律效力', '行動簽核'],
+    url: 'https://www.jrsys.com.tw/Page/GeneralContent/GeneralContentList.aspx?TopCategoryNo=491&GeneralContentCategoryNo=594',
+    keywords: ['pdfsign','doc','ca','timestamp','compliance','finance','gov']
+  },
+  {
+    id: 'iot',
+    name: '物聯網資安平台',
+    nameEn: 'AIoT Security',
+    icon: '📡',
+    summary: '專為 IoT 與 OT 設備設計的資安方案，提供設備認證、加密通訊與安全韌體更新機制。',
+    tags: ['IoT 安全', 'OT 防護', '設備認證', '智慧工廠'],
+    url: 'https://www.jrsys.com.tw/Page/GeneralContent/GeneralContentList.aspx?TopCategoryNo=491&GeneralContentCategoryNo=569',
+    keywords: ['iot','device','manufacturing','ot','uas']
+  },
+  {
+    id: 'kms',
+    name: '金鑰管理系統',
+    nameEn: 'KMS',
+    icon: '🗝️',
+    summary: '企業級金鑰生命週期管理，支援 HSM 整合，確保加密金鑰安全儲存、輪替與稽核，保護核心資產。',
+    tags: ['金鑰管理', 'HSM', '加密', '企業級'],
+    url: 'https://www.jrsys.com.tw/Page/GeneralContent/GeneralContentList.aspx?TopCategoryNo=491&GeneralContentCategoryNo=616',
+    keywords: ['kms','enterprise','onprem','hybrid','compliance','long','medium']
+  },
+  {
+    id: 'ca',
+    name: '憑證管理中心 (CA/RA/VA)',
+    nameEn: 'PKI Infrastructure',
+    icon: '🏛️',
+    summary: '完整 PKI 基礎建設，包含憑證授權中心、註冊中心與驗證中心，支援企業自建或政府機關合規需求。',
+    tags: ['PKI', '數位憑證', '身分驗證', '政府合規'],
+    url: 'https://www.jrsys.com.tw/Page/GeneralContent/GeneralContentList.aspx?TopCategoryNo=491&GeneralContentCategoryNo=561',
+    keywords: ['ca','gov','compliance','doc','onprem','enterprise','medium','long']
+  },
+  {
+    id: 'privconnect',
+    name: 'Jrsys PrivConnect',
+    nameEn: 'PrivConnect',
+    icon: '🔗',
+    summary: '安全遠端連線解決方案，讓外部人員與廠商在受控環境下安全存取內部系統，取代傳統 VPN。',
+    tags: ['安全遠端', '廠商管理', '無 VPN', '零信任連線'],
+    url: 'https://www.jrsys.com.tw/Page/GeneralContent/GeneralContentList.aspx?TopCategoryNo=491&GeneralContentCategoryNo=634',
+    keywords: ['privconnect','zero-trust','remote','vpn','pam','medium']
+  },
+  {
+    id: 'privacy',
+    name: '個資稽核存證系統',
+    nameEn: 'Privacy Audit',
+    icon: '🔏',
+    summary: '符合個資法要求的資料存取稽核與存證平台，自動記錄個資存取行為，提供合規報告與法律存證。',
+    tags: ['個資法', '存取稽核', '法規遵循', '自動報告'],
+    url: 'https://www.jrsys.com.tw/Page/GeneralContent/GeneralContentList.aspx?TopCategoryNo=491&GeneralContentCategoryNo=635',
+    keywords: ['privacy','compliance','audit','gov','finance','medium','large']
+  }
+];
+
+const profileMap = {
+  'finance-compliance': { role: '金融業合規專員', avatar: '🏦', org: 'Financial Compliance Officer' },
+  'gov-health-identity': { role: '政府 / 醫療資安主管', avatar: '🏥', org: 'Government / Healthcare CISO' },
+  'manufacturing-iot': { role: '智慧製造資安工程師', avatar: '🏭', org: 'Smart Manufacturing Security' },
+  'tech-zero-trust': { role: '科技業零信任架構師', avatar: '💻', org: 'Zero Trust Architect' },
+  'default': { role: '企業資安決策者', avatar: '🛡️', org: 'Enterprise Security Decision Maker' }
+};
+
+// ==================== STATE ====================
+let currentQ = 0;
+let answers = {};
+let userTags = [];
+
+// ==================== QUIZ LOGIC ====================
+function startQuiz() {
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  
+  document.getElementById('q-category').textContent = q.category;
+  document.getElementById('q-icon').textContent = q.icon;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-sub').textContent = q.sub;
+  document.getElementById('progress-count').textContent = `${currentQ + 1} / ${questions.length}`;
+  document.getElementById('progress-fill').style.width = `${(currentQ / questions.length) * 100}%`;
+  document.getElementById('btn-back').style.visibility = currentQ === 0 ? 'hidden' : 'visible';
+
+  // Options
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  const count = q.options.length;
+  grid.className = 'options-grid' + (count >= 5 ? ' cols-3' : '');
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    const isSelected = answers[q.id] === opt.value;
+    btn.className = 'option-btn' + (isSelected ? ' selected' : '');
+    const customKey = opt.customKey || (q.id + '_custom');
+    const inputId = `custom-input-${q.id}-${opt.value}`;
+    btn.innerHTML = `
+      <div class="option-icon-wrap">${opt.icon}</div>
+      <div class="option-content">
+        <div class="option-title">${opt.title}</div>
+        ${opt.isCustom
+          ? `<input class="custom-input" id="${inputId}" type="text" placeholder="請輸入..." value="${answers[customKey] || ''}" onclick="event.stopPropagation()">`
+          : `<div class="option-desc">${opt.desc}</div>`
+        }
+      </div>
+      <div class="option-check">✓</div>
+    `;
+    btn.onclick = () => {
+      selectOption(q.id, opt.value, btn);
+      if (opt.isCustom) {
+        setTimeout(() => document.getElementById(inputId)?.focus(), 50);
+      }
+    };
+    btn.style.animation = `fadeIn 0.4s ease both`;
+    btn.style.animationDelay = `${i * 0.08}s`;
+    grid.appendChild(btn);
+  });
+
+  // Listen for typing in any custom inputs on this question
+  setTimeout(() => {
+    q.options.filter(o => o.isCustom).forEach(opt => {
+      const customKey = opt.customKey || (q.id + '_custom');
+      const inputId = `custom-input-${q.id}-${opt.value}`;
+      const inp = document.getElementById(inputId);
+      if (inp) {
+        inp.addEventListener('input', (e) => { answers[customKey] = e.target.value; });
+      }
+    });
+  }, 100);
+
+  // Hint dots
+  const dots = document.getElementById('hint-dots');
+  dots.innerHTML = '';
+  questions.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'hint-dot' + (i < currentQ ? ' done' : i === currentQ ? ' active' : '');
+    dots.appendChild(dot);
+  });
+
+  updateNextBtn();
+}
+
+function selectOption(qId, value, el) {
+  answers[qId] = value;
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  updateNextBtn();
+}
+
+function updateNextBtn() {
+  const q = questions[currentQ];
+  const btn = document.getElementById('btn-next');
+  if (answers[q.id]) {
+    btn.classList.add('enabled');
+    btn.textContent = currentQ === questions.length - 1 ? 'ANALYZE →' : 'NEXT →';
+  } else {
+    btn.classList.remove('enabled');
+    btn.textContent = 'NEXT →';
+  }
+}
+
+function nextQuestion() {
+  if (!answers[questions[currentQ].id]) return;
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    analyzeResults();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+}
+
+// ==================== ANALYSIS ====================
+function analyzeResults() {
+  showScreen('analyzing');
+
+  // Collect all tags from answers
+  userTags = [];
+  Object.entries(answers).forEach(([qId, value]) => {
+    const q = questions.find(q => q.id === qId);
+    const opt = q?.options.find(o => o.value === value);
+    if (opt) userTags.push(...opt.tags);
+  });
+
+  setTimeout(() => showScreen('gate'), 2000);
+}
+
+function gateSubmit() {
+  const name = document.getElementById('g-name').value.trim();
+  const company = document.getElementById('g-company').value.trim();
+  const email = document.getElementById('g-email').value.trim();
+
+  // Validate
+  let hasError = false;
+  [['g-name', name], ['g-company', company], ['g-email', email]].forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (!val) {
+      el.classList.add('error');
+      el.addEventListener('input', () => el.classList.remove('error'), { once: true });
+      hasError = true;
+    }
+  });
+
+  const phone = document.getElementById('g-phone').value.trim();
+  if (!phone) {
+    document.getElementById('g-phone').classList.add('error');
+    document.getElementById('g-phone').addEventListener('input', () => document.getElementById('g-phone').classList.remove('error'), { once: true });
+    hasError = true;
+  }
+
+  if (hasError) { showToast('⚠ 請填寫姓名、公司、Email 與聯絡電話'); return; }
+
+  const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailReg.test(email)) {
+    document.getElementById('g-email').classList.add('error');
+    showToast('⚠ 請輸入有效的 Email 格式');
+    return;
+  }
+
+  // Save to answers for later use in contact form
+  answers['_name'] = name;
+  answers['_company'] = company;
+  answers['_email'] = email;
+  answers['_jobtitle'] = document.getElementById('g-jobtitle').value.trim();
+
+  const btn = document.getElementById('gate-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '處理中...';
+
+  const jobtitle = document.getElementById('g-jobtitle').value.trim();
+
+  // Build answer labels
+  const answerLabels = {
+    industry: { finance:'金融業', 'gov-health':'醫療／政府', manufacturing:'製造／工業', tech:'科技／服務業', other: answers['industry_custom'] || '其他' },
+    size: { small:'小型 (<50人)', medium:'中型 (50–300人)', large:'大型 (300–1000人)', enterprise:'企業級 (1000+人)' },
+    pain: { identity:'帳號／密碼安全', insider:'內部人員威脅', compliance:'法規遵循稽核', remote:'遠端連線安全' },
+    env: { cloud:'純雲端', onprem:'本地端', hybrid:'混合雲', iot:'物聯網／OT設備', env_other: answers['env_custom'] || '其他', env_unclear:'不清楚' },
+    goal: { mfa:'強化身分驗證', audit:'可視化監控稽核', doc:'數位簽章／文件安全', zt:'零信任架構' },
+    urgency: { urgent:'立即 (1個月內)', short:'短期 (1–3個月)', medium:'中期 (3–6個月)', long:'長期規劃 (6個月以上)' }
+  };
+
+  // 先計算推薦產品，一起送出
+  const scored = products.map(p => ({ ...p, score: scoreProduct(p) }));
+  scored.sort((a, b) => b.score - a.score);
+  const topProds = scored.slice(0, 3).map(p => p.name).join('、');
+
+  sendToSheets({
+    姓名: name,
+    職稱: jobtitle,
+    公司: company,
+    Email: email,
+    聯絡電話: phone,
+    產業別: answerLabels.industry[answers.industry] || answers.industry || '',
+    組織規模: answerLabels.size[answers.size] || answers.size || '',
+    資安痛點: answerLabels.pain[answers.pain] || answers.pain || '',
+    IT環境: answerLabels.env[answers.env] || answers.env || '',
+    導入目標: answerLabels.goal[answers.goal] || answers.goal || '',
+    導入時程: answerLabels.urgency[answers.urgency] || answers.urgency || '',
+    推薦產品: topProds,
+    來源: '產品探索器 · 解鎖推薦結果'
+  }).then(r => {
+    btn.disabled = false;
+    btn.textContent = '查看我的推薦方案 →';
+    if (r.ok) {
+      answers['_name'] = name;
+      answers['_company'] = company;
+      answers['_email'] = email;
+      answers['_jobtitle'] = jobtitle;
+      answers['_phone'] = phone;
+      answers['_answerLabels'] = answerLabels;
+      showResults();
+    } else {
+      showToast('⚠ 送出失敗，請稍後再試');
+    }
+  }).catch(() => {
+    btn.disabled = false;
+    btn.textContent = '查看我的推薦方案 →';
+    showToast('⚠ 網路錯誤，請稍後再試');
+  });
+}
+
+function scoreProduct(product) {
+  let score = 0;
+  product.keywords.forEach(kw => {
+    if (userTags.includes(kw)) score += 2;
+  });
+  // Bonus for exact tag matches
+  userTags.forEach(tag => {
+    if (product.keywords.includes(tag)) score += 1;
+  });
+  return score;
+}
+
+function showResults() {
+  const scored = products.map(p => ({ ...p, score: scoreProduct(p) }));
+  scored.sort((a, b) => b.score - a.score);
+  const maxScore = scored[0].score || 1;
+  const topProducts = scored.slice(0, 3);
+
+  // Profile detection
+  let profile = profileMap.default;
+  const ind = answers.industry;
+  const pain = answers.pain;
+  const key = `${ind}-${pain}`;
+  if (profileMap[key]) profile = profileMap[key];
+  else if (ind === 'manufacturing' || answers.env === 'iot') profile = { role: '智慧製造資安工程師', avatar: '🏭', org: 'OT/IT Security Engineer' };
+  else if (answers.goal === 'doc') profile = { role: '電子簽章專案負責人', avatar: '📜', org: 'Digital Signature Project Manager' };
+  else if (answers.goal === 'zt') profile = { role: '零信任架構推動者', avatar: '🔒', org: 'Zero Trust Advocate' };
+
+  document.getElementById('profile-avatar').textContent = profile.avatar;
+  document.getElementById('profile-role').textContent = profile.role;
+  document.getElementById('profile-org').textContent = profile.org;
+  document.getElementById('result-title').textContent = `為您推薦 ${topProducts.length} 款解決方案`;
+  document.getElementById('result-desc').textContent = `根據您的組織特性與資安需求分析，以下是最適合貴組織的捷而思產品組合，點擊可查看詳細說明。`;
+
+  const grid = document.getElementById('products-grid');
+  grid.innerHTML = '';
+
+  topProducts.forEach((p, i) => {
+    const matchPct = Math.round((p.score / maxScore) * 100);
+    const card = document.createElement('a');
+    card.href = p.url;
+    card.target = '_blank';
+    card.className = 'product-card' + (i === 0 ? ' primary' : '');
+    card.style.animationDelay = `${i * 0.1}s`;
+    card.innerHTML = `
+      ${i === 0 ? '<div class="match-label">★ 最佳推薦</div>' : `<div class="match-label"># ${i+1}</div>`}
+      <div class="product-icon">${p.icon}</div>
+      <div class="product-name-en">${p.nameEn}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-match-bar">
+        <div class="match-bar-label">
+          <span>需求匹配度</span>
+          <span>${matchPct}%</span>
+        </div>
+        <div class="match-bar-track">
+          <div class="match-bar-fill" id="bar-${p.id}" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="product-summary">${p.summary}</div>
+      <div class="product-tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      <div class="product-link">了解更多 →</div>
+    `;
+    grid.appendChild(card);
+
+    // Animate bar
+    setTimeout(() => {
+      const bar = document.getElementById(`bar-${p.id}`);
+      if (bar) bar.style.width = `${matchPct}%`;
+    }, 800 + i * 100);
+  });
+
+  showScreen('result');
+}
+
+function restart() {
+  currentQ = 0;
+  answers = {};
+  userTags = [];
+  ['g-name','g-jobtitle','g-company','g-email','g-phone'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('error'); }
+  });
+  const btn = document.getElementById('gate-submit-btn');
+  if (btn) { btn.disabled = false; btn.textContent = '查看我的推薦方案 →'; }
+  showScreen('intro');
+}
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+}
+
+// ==================== FORMSPREE + GOOGLE SHEETS SUBMIT ====================
+const FORMSPREE_URL = 'https://formspree.io/f/xqeyjzny';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxRy6UthJfH33EtFW63fgTiu355x630JCKND42371v6R1PlXcowfqVsLc3ITl_m1vz-pQ/exec';
+
+function sendToSheets(data) {
+  // 送 Formspree（寄信到信箱）
+  const formspreePromise = fetch(FORMSPREE_URL, {
+    method: 'POST',
+    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+
+  // 送 Google Sheets（用 Image 技巧繞過 CORS 限制）
+  const params = new URLSearchParams();
+  Object.entries(data).forEach(([k, v]) => params.append(k, v || ''));
+  const img = new Image();
+  img.src = SHEETS_URL + '?' + params.toString();
+
+  return formspreePromise;
+}
+function createParticles() {
+  const field = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.setProperty('--dur', (8 + Math.random() * 12) + 's');
+    p.style.setProperty('--delay', (Math.random() * 10) + 's');
+    p.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
+    p.style.width = (Math.random() > 0.7 ? 3 : 2) + 'px';
+    p.style.height = p.style.width;
+    field.appendChild(p);
+  }
+}
+
+createParticles();
+
+// ==================== SHARE ====================
+function copyShareText() {
+  const prods = Array.from(document.querySelectorAll('.product-name')).map(el => el.textContent).join('、');
+  const role = document.getElementById('profile-role').textContent;
+  const text = `【捷而思資安產品推薦】\n我的資安輪廓：${role}\n推薦產品：${prods}\n\n立即探索適合您的資安方案：\nhttps://www.jrsys.com.tw`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btn-copy');
+    btn.classList.add('copied');
+    btn.innerHTML = '<span>✓</span> 已複製！';
+    showToast('✓ 推薦結果已複製到剪貼簿');
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<span>📋</span> 複製推薦結果';
+    }, 3000);
+  }).catch(() => {
+    showToast('⚠ 請手動複製頁面網址');
+  });
+}
+
+function shareNative() {
+  const prods = Array.from(document.querySelectorAll('.product-name')).map(el => el.textContent).join('、');
+  const role = document.getElementById('profile-role').textContent;
+  if (navigator.share) {
+    navigator.share({
+      title: '捷而思資安產品推薦',
+      text: `我的資安輪廓：${role}｜推薦產品：${prods}`,
+      url: 'https://www.jrsys.com.tw'
+    }).catch(() => {});
+  } else {
+    // fallback: copy URL
+    navigator.clipboard.writeText('https://www.jrsys.com.tw').then(() => {
+      showToast('✓ 網址已複製到剪貼簿');
+    });
+  }
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ==================== CONTACT FORM ====================
+function toggleContact() {
+  const wrap = document.getElementById('contact-form-wrap');
+  const toggle = document.getElementById('contact-toggle');
+  const chevron = document.getElementById('contact-chevron');
+  wrap.classList.toggle('open');
+  toggle.classList.toggle('open');
+  chevron.classList.toggle('open');
+
+  // Populate prefilled chips on first open
+  const fields = document.getElementById('prefilled-fields');
+  if (fields && !fields.dataset.filled) {
+    fields.dataset.filled = '1';
+    const info = [
+      { label: '姓名', value: answers['_name'] },
+      { label: '職稱', value: answers['_jobtitle'] },
+      { label: '公司', value: answers['_company'] },
+      { label: 'Email', value: answers['_email'] },
+      { label: '電話', value: answers['_phone'] },
+    ].filter(i => i.value);
+    fields.innerHTML = info.map(i =>
+      `<div class="prefilled-chip">${i.label}：<span>${i.value}</span></div>`
+    ).join('');
+  }
+}
+
+function submitForm() {
+  const prods = Array.from(document.querySelectorAll('.product-name')).map(el => el.textContent).join('、');
+  const btn = document.querySelector('.btn-submit');
+  btn.disabled = true;
+  btn.textContent = '送出中...';
+
+  const al = answers['_answerLabels'] || {};
+
+  sendToSheets({
+    姓名: answers['_name'] || '',
+    職稱: answers['_jobtitle'] || '',
+    公司: answers['_company'] || '',
+    Email: answers['_email'] || '',
+    聯絡電話: answers['_phone'] || '',
+    產業別: al.industry?.[answers.industry] || answers.industry || '',
+    組織規模: al.size?.[answers.size] || answers.size || '',
+    資安痛點: al.pain?.[answers.pain] || answers.pain || '',
+    IT環境: al.env?.[answers.env] || answers.env || '',
+    導入目標: al.goal?.[answers.goal] || answers.goal || '',
+    導入時程: al.urgency?.[answers.urgency] || answers.urgency || '',
+    推薦產品: prods,
+    補充說明: document.getElementById('f-note').value.trim(),
+    來源: '產品探索器 · 結果頁補充需求'
+  }).then(r => {
+    if (r.ok) {
+      document.getElementById('form-inner').style.display = 'none';
+      document.getElementById('form-success').classList.add('show');
+      showToast('✓ 諮詢需求已送出！');
+    } else {
+      btn.disabled = false;
+      btn.textContent = '送出諮詢需求 →';
+      showToast('⚠ 送出失敗，請稍後再試');
+    }
+  }).catch(() => {
+    btn.disabled = false;
+    btn.textContent = '送出諮詢需求 →';
+    showToast('⚠ 網路錯誤，請稍後再試');
+  });
+}
+</script>
+</body>
+</html>
