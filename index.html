@@ -1407,7 +1407,7 @@
       <div class="gate-icon">🔐</div>
       <div class="gate-eyebrow">分析完成 · 即將顯示結果</div>
       <h2 class="gate-title">留下聯絡資訊<br>解鎖您的專屬推薦</h2>
-      <p class="gate-desc">捷而思顧問將根據您的分析結果，提供更深入的產品說明與報價建議。</p>
+      <p class="gate-desc">捷而思顧問將根據您的分析結果，盡速提供更深入的產品說明與報價建議。</p>
       <div class="gate-form">
         <div class="gate-row">
           <div class="gate-field">
@@ -1478,7 +1478,7 @@
           <div class="contact-toggle-icon">📬</div>
           <div class="contact-toggle-text">
             <strong>索取專業諮詢</strong>
-            <span>補充說明需求，捷而思顧問將在 1 個工作天內與您聯繫</span>
+            <span>補充說明需求，捷而思顧問將盡速與您聯繫</span>
           </div>
         </div>
         <div class="contact-chevron" id="contact-chevron">▾</div>
@@ -1502,7 +1502,7 @@
         <div class="form-success" id="form-success">
           <div class="form-success-icon">✅</div>
           <div class="form-success-title">感謝您的詢問！</div>
-          <div class="form-success-desc">我們已收到您的諮詢需求，<br>捷而思顧問將在 1 個工作天內透過 Email 與您聯繫。</div>
+          <div class="form-success-desc">我們已收到您的諮詢需求，<br>捷而思顧問將盡速透過 Email 與您聯繫。</div>
         </div>
       </div>
     </div>
@@ -2022,25 +2022,16 @@ function showScreen(name) {
   document.getElementById(`screen-${name}`).classList.add('active');
 }
 
-// ==================== FORMSPREE + GOOGLE SHEETS SUBMIT ====================
-const FORMSPREE_URL = 'https://formspree.io/f/xqeyjzny';
+// ==================== GOOGLE SHEETS SUBMIT ====================
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxRy6UthJfH33EtFW63fgTiu355x630JCKND42371v6R1PlXcowfqVsLc3ITl_m1vz-pQ/exec';
 
 function sendToSheets(data) {
-  // 送 Formspree（寄信到信箱）
-  const formspreePromise = fetch(FORMSPREE_URL, {
-    method: 'POST',
-    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-
-  // 送 Google Sheets（用 Image 技巧繞過 CORS 限制）
   const params = new URLSearchParams();
   Object.entries(data).forEach(([k, v]) => params.append(k, v || ''));
   const img = new Image();
   img.src = SHEETS_URL + '?' + params.toString();
-
-  return formspreePromise;
+  // 回傳一個假的 resolved promise 讓後續 .then(r => r.ok) 正常執行
+  return Promise.resolve({ ok: true });
 }
 function createParticles() {
   const field = document.getElementById('particles');
