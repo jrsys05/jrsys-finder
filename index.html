@@ -1315,7 +1315,73 @@
     .profile-info { text-align: center; }
   }
 
-  /* Scanline overlay */
+  /* Privacy block */
+  .privacy-block {
+    margin-top: 36px;
+    width: 100%;
+    max-width: 640px;
+    text-align: left;
+  }
+
+  .privacy-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+
+  .privacy-toggle:hover {
+    border-color: rgba(0,212,255,0.3);
+    color: var(--text);
+  }
+
+  .privacy-chevron {
+    transition: transform 0.3s;
+    font-size: 16px;
+  }
+
+  .privacy-chevron.open { transform: rotate(180deg); }
+
+  .privacy-content {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  .privacy-content.open { display: block; animation: fadeIn 0.3s ease; }
+
+  .privacy-content p { margin-bottom: 12px; }
+
+  .privacy-content ol {
+    padding-left: 20px;
+    margin-bottom: 12px;
+  }
+
+  .privacy-content ol li {
+    margin-bottom: 8px;
+  }
+
+  .privacy-content strong { color: var(--text); }
+
+  .privacy-content a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .privacy-content a:hover { text-decoration: underline; }
   body::after {
     content: '';
     position: fixed;
@@ -1364,8 +1430,7 @@
       <h1 class="intro-title">找到最適合<br>您的資安方案</h1>
       <p class="intro-subtitle">30 秒互動診斷，精準推薦</p>
       <p class="intro-desc">
-        透過幾個簡單問題，我們將分析您的組織需求、資安挑戰與環境特性，<br>
-        為您精準推薦捷而思最適合的資安產品組合。
+        捷而思致力於資安產業，期望能給客戶有更好的資安體驗，期待能在參觀攤位時找到您需要的各項服務。透過幾個簡單問題，我們將分析您的組織需求、資安挑戰與環境特性，為您精準推薦捷而思最適合的資安產品組合。有任何需要以及指教，歡迎跟我們聯繫，謝謝 !!
       </p>
       <div class="intro-features">
         <div class="intro-feature"><div class="feature-dot"></div> 6 個情境問題</div>
@@ -1374,6 +1439,24 @@
         <div class="intro-feature"><div class="feature-dot"></div> 無需註冊</div>
       </div>
       <button class="btn-start" onclick="startQuiz()">開始探索</button>
+
+      <!-- 個資聲明 -->
+      <div class="privacy-block">
+        <div class="privacy-toggle" onclick="togglePrivacy()">
+          <span>📋 個人資料保護法共同聲明</span>
+          <span class="privacy-chevron" id="privacy-chevron">▾</span>
+        </div>
+        <div class="privacy-content" id="privacy-content">
+          <p>依個人資料保護法之規定以本聲明告知將如何處理本表單所蒐集之個人資料並徵求您同意。</p>
+          <ol>
+            <li><strong>個人資料蒐集之目的：</strong>本表單所蒐集之個人資料是基於臺灣資安大會臺灣資安館展攤行銷活動填寫調查問卷各項相關業務所需。</li>
+            <li><strong>個人資料蒐集之方式：</strong>透過個資當事人填寫本表單所列之姓名、稱謂、服務單位及電子郵件，並勾選同意本聲明及同意書後，透過網路傳輸方式取得。</li>
+            <li><strong>個人資料利用之期間與地區：</strong>個人資料利用期間為個人資料蒐集之特定目的存續期間，利用地區為台灣地區（含澎湖、金門及馬祖等地區）。</li>
+            <li><strong>就您的個人資料可以行使：</strong>請求查詢或閱覽、製給複製本、補充或更正、請求停止蒐集、處理及利用與請求刪除。</li>
+          </ol>
+          <p>若您欲執行上述權利時，請來信聯絡 <a href="mailto:service@jrsys.com.tw">service@jrsys.com.tw</a>，會有專人為您服務。</p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2069,6 +2152,13 @@ function createParticles() {
     p.style.height = p.style.width;
     field.appendChild(p);
   }
+}
+
+function togglePrivacy() {
+  const content = document.getElementById('privacy-content');
+  const chevron = document.getElementById('privacy-chevron');
+  content.classList.toggle('open');
+  chevron.classList.toggle('open');
 }
 
 createParticles();
