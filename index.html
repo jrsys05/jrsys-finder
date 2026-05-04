@@ -1103,6 +1103,8 @@
     max-width: 640px;
     text-align: left;
     padding: 0 4px;
+    position: relative;
+    z-index: 2;
   }
 
   .privacy-toggle {
@@ -1120,10 +1122,13 @@
     transition: all 0.2s;
     width: 100%;
     text-align: left;
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: rgba(0,212,255,0.1);
+    touch-action: manipulation;
     user-select: none;
     -webkit-user-select: none;
     outline: none;
+    position: relative;
+    z-index: 2;
   }
 
   .privacy-toggle:hover { border-color: rgba(0,212,255,0.3); color: var(--text); }
@@ -1165,6 +1170,10 @@
     color: var(--text-muted);
     transition: all 0.2s;
     text-align: left;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0,212,255,0.1);
+    position: relative;
+    z-index: 2;
   }
 
   .privacy-agree:hover { border-color: rgba(0,212,255,0.3); color: var(--text); }
@@ -1688,6 +1697,17 @@ function togglePrivacy() {
   content.classList.toggle('open');
   chevron.classList.toggle('open');
 }
+
+// Ensure touch devices can trigger the privacy toggle
+document.addEventListener('DOMContentLoaded', function() {
+  const privBtn = document.querySelector('.privacy-toggle');
+  if (privBtn) {
+    privBtn.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      togglePrivacy();
+    }, { passive: false });
+  }
+});
 
 function toggleAgree() {
   const checked = document.getElementById('privacy-agree-check').checked;
