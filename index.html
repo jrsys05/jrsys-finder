@@ -1473,7 +1473,6 @@
         <div class="intro-feature"><div class="feature-dot"></div> 即時產品推薦</div>
         <div class="intro-feature"><div class="feature-dot"></div> 無需註冊</div>
       </div>
-      <button class="btn-start" id="btn-start" onclick="startQuiz()" disabled style="opacity:0.4;cursor:not-allowed;">開始探索</button>
 
       <!-- 個資聲明 -->
       <div class="privacy-block">
@@ -1497,6 +1496,8 @@
           <span>我已閱讀並同意上述個人資料保護法共同聲明</span>
         </label>
       </div>
+
+      <button class="btn-start" id="btn-start" onclick="startQuiz()" disabled style="opacity:0.4;cursor:not-allowed;margin-top:24px;">開始探索</button>
     </div>
   </div>
 
@@ -1836,8 +1837,15 @@ const products = [
     keywords: ['privconnect','zero-trust','remote','vpn','pam','medium']
   },
   {
-    id: 'privacy',
-    name: '個資稽核存證系統',
+    id: 'pdffill',
+    name: 'PDFFill 自動套表系統',
+    nameEn: 'PDFFill',
+    icon: '📝',
+    summary: '自動將資料帶入 PDF 表單，支援拖拉欄位定位、多種文字編排、QR Code 驗證，適用於保險、買賣契約等固定格式文件，節省人力與紙張成本。',
+    tags: ['PDF 套表', '自動填表', '文件管理', '企業效率'],
+    url: 'https://www.jrsys.com.tw',
+    keywords: ['pdfsign','doc','compliance','finance','gov','simple','urgent']
+  },
     nameEn: 'Privacy Audit',
     icon: '🔏',
     summary: '符合個資法要求的資料存取稽核與存證平台，自動記錄個資存取行為，提供合規報告與法律存證。',
