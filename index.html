@@ -1382,6 +1382,41 @@
   }
 
   .privacy-content a:hover { text-decoration: underline; }
+
+  .privacy-agree {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-muted);
+    transition: all 0.2s;
+    text-align: left;
+  }
+
+  .privacy-agree:hover {
+    border-color: rgba(0,212,255,0.3);
+    color: var(--text);
+  }
+
+  .privacy-agree input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .privacy-agree.agreed {
+    border-color: rgba(0,255,136,0.4);
+    background: rgba(0,255,136,0.05);
+    color: var(--success);
+  }
   body::after {
     content: '';
     position: fixed;
@@ -1438,7 +1473,7 @@
         <div class="intro-feature"><div class="feature-dot"></div> 即時產品推薦</div>
         <div class="intro-feature"><div class="feature-dot"></div> 無需註冊</div>
       </div>
-      <button class="btn-start" onclick="startQuiz()">開始探索</button>
+      <button class="btn-start" id="btn-start" onclick="startQuiz()" disabled style="opacity:0.4;cursor:not-allowed;">開始探索</button>
 
       <!-- 個資聲明 -->
       <div class="privacy-block">
@@ -1456,6 +1491,11 @@
           </ol>
           <p>若您欲執行上述權利時，請來信聯絡 <a href="mailto:service@jrsys.com.tw">service@jrsys.com.tw</a>，會有專人為您服務。</p>
         </div>
+        <!-- 同意勾選 -->
+        <label class="privacy-agree" id="privacy-agree-label">
+          <input type="checkbox" id="privacy-agree-check" onchange="toggleAgree()">
+          <span>我已閱讀並同意上述個人資料保護法共同聲明</span>
+        </label>
       </div>
     </div>
   </div>
@@ -2120,6 +2160,10 @@ function restart() {
   });
   const btn = document.getElementById('gate-submit-btn');
   if (btn) { btn.disabled = false; btn.textContent = '查看我的推薦方案 →'; }
+  // Reset privacy agree
+  const agreeCheck = document.getElementById('privacy-agree-check');
+  if (agreeCheck) agreeCheck.checked = false;
+  toggleAgree();
   showScreen('intro');
 }
 
@@ -2151,6 +2195,24 @@ function createParticles() {
     p.style.width = (Math.random() > 0.7 ? 3 : 2) + 'px';
     p.style.height = p.style.width;
     field.appendChild(p);
+  }
+}
+
+function toggleAgree() {
+  const checked = document.getElementById('privacy-agree-check').checked;
+  const btn = document.getElementById('btn-start');
+  const label = document.getElementById('privacy-agree-label');
+  if (checked) {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+    label.classList.add('agreed');
+    // 自動展開個資聲明讓使用者看到
+  } else {
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+    btn.style.cursor = 'not-allowed';
+    label.classList.remove('agreed');
   }
 }
 
