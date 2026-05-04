@@ -34,12 +34,11 @@
     position: relative;
   }
 
-  /* Animated grid background */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: 
+    background-image:
       linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
     background-size: 60px 60px;
@@ -53,7 +52,6 @@
     100% { transform: translateY(60px); }
   }
 
-  /* Particles */
   .particle-field {
     position: fixed;
     inset: 0;
@@ -79,7 +77,6 @@
     100% { opacity: 0; transform: translateY(-10vh) translateX(var(--drift)); }
   }
 
-  /* Main wrapper */
   #app {
     position: relative;
     z-index: 1;
@@ -88,7 +85,6 @@
     flex-direction: column;
   }
 
-  /* Header */
   header {
     padding: 24px 40px;
     display: flex;
@@ -149,7 +145,6 @@
     letter-spacing: 1px;
   }
 
-  /* Screens */
   .screen {
     display: none;
     flex: 1;
@@ -167,7 +162,7 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* ===== INTRO SCREEN ===== */
+  /* ===== INTRO ===== */
   .intro-content {
     text-align: center;
     max-width: 680px;
@@ -192,7 +187,6 @@
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--accent));
   }
-
   .intro-eyebrow::after { transform: scaleX(-1); }
 
   .intro-title {
@@ -272,37 +266,16 @@
     transition: opacity 0.3s;
   }
 
-  .btn-start:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--glow-strong);
-  }
-
+  .btn-start:hover { transform: translateY(-2px); box-shadow: var(--glow-strong); }
   .btn-start:hover::before { opacity: 1; }
+  .btn-start::after { content: ' →'; }
 
-  .btn-start::after {
-    content: ' →';
-  }
-
-  /* Floating shields deco */
-  .deco-ring {
-    position: absolute;
-    border: 1px solid rgba(0,212,255,0.1);
-    border-radius: 50%;
-    animation: pulse-ring 4s ease-in-out infinite;
-  }
-
-  @keyframes pulse-ring {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(1.05); }
-  }
-
-  /* ===== QUIZ SCREEN ===== */
+  /* ===== QUIZ ===== */
   .quiz-container {
     width: 100%;
     max-width: 720px;
   }
 
-  /* Progress */
   .progress-header {
     display: flex;
     justify-content: space-between;
@@ -353,7 +326,6 @@
     box-shadow: 0 0 12px var(--accent);
   }
 
-  /* Question card */
   .question-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -384,49 +356,19 @@
     opacity: 0.7;
   }
 
-  .q-icon {
-    font-size: 40px;
-    margin-bottom: 20px;
-    display: block;
-  }
+  .q-icon { font-size: 40px; margin-bottom: 20px; display: block; }
+  .q-text { font-size: 22px; font-weight: 700; line-height: 1.4; margin-bottom: 8px; }
+  .q-sub { font-size: 14px; color: var(--text-muted); line-height: 1.6; font-weight: 300; }
 
-  .q-text {
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1.4;
-    margin-bottom: 8px;
-  }
-
-  .q-sub {
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.6;
-    font-weight: 300;
-  }
-
-
-  /* Options */
   .options-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
 
-  .options-grid.cols-3 {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-
-  .options-grid.cols-3 .option-btn {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .options-grid.cols-3 .option-icon-wrap {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-  }
+  .options-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .options-grid.cols-3 .option-btn { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .options-grid.cols-3 .option-icon-wrap { width: 40px; height: 40px; font-size: 20px; }
 
   @media (max-width: 600px) {
     .options-grid, .options-grid.cols-3 { grid-template-columns: 1fr; }
@@ -482,19 +424,8 @@
   }
 
   .option-content { flex: 1; }
-
-  .option-title {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 4px;
-    line-height: 1.3;
-  }
-
-  .option-desc {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.5;
-  }
+  .option-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
+  .option-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
   .custom-input {
     margin-top: 6px;
@@ -535,12 +466,8 @@
     transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .option-btn.selected .option-check {
-    opacity: 1;
-    transform: scale(1);
-  }
+  .option-btn.selected .option-check { opacity: 1; transform: scale(1); }
 
-  /* Nav buttons */
   .quiz-nav {
     display: flex;
     justify-content: space-between;
@@ -561,10 +488,7 @@
     transition: all 0.2s;
   }
 
-  .btn-back:hover {
-    border-color: var(--text-muted);
-    color: var(--text);
-  }
+  .btn-back:hover { border-color: var(--text-muted); color: var(--text); }
 
   .btn-next {
     background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -582,17 +506,9 @@
     pointer-events: none;
   }
 
-  .btn-next.enabled {
-    opacity: 1;
-    pointer-events: all;
-  }
+  .btn-next.enabled { opacity: 1; pointer-events: all; }
+  .btn-next.enabled:hover { transform: translateY(-2px); box-shadow: var(--glow); }
 
-  .btn-next.enabled:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--glow);
-  }
-
-  /* Hint dots */
   .hint-dots {
     display: flex;
     gap: 6px;
@@ -611,11 +527,8 @@
   .hint-dot.done { background: var(--accent); }
   .hint-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); transform: scale(1.3); }
 
-  /* ===== RESULT SCREEN ===== */
-  .result-header {
-    text-align: center;
-    margin-bottom: 48px;
-  }
+  /* ===== RESULT ===== */
+  .result-header { text-align: center; margin-bottom: 48px; }
 
   .result-badge {
     display: inline-flex;
@@ -650,7 +563,6 @@
     line-height: 1.7;
   }
 
-  /* Product cards */
   .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -682,14 +594,11 @@
 
   .product-card:nth-child(2) { animation-delay: 0.1s; }
   .product-card:nth-child(3) { animation-delay: 0.2s; }
-  .product-card:nth-child(4) { animation-delay: 0.3s; }
 
   .product-card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     height: 3px;
     background: linear-gradient(90deg, var(--accent2), var(--accent));
     opacity: 0;
@@ -713,8 +622,7 @@
 
   .match-label {
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 16px; right: 16px;
     font-family: 'Space Mono', monospace;
     font-size: 10px;
     letter-spacing: 1px;
@@ -725,18 +633,8 @@
     border-radius: 10px;
   }
 
-  .product-icon {
-    font-size: 36px;
-    margin-bottom: 16px;
-    display: block;
-  }
-
-  .product-name {
-    font-size: 17px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    line-height: 1.3;
-  }
+  .product-icon { font-size: 36px; margin-bottom: 16px; display: block; }
+  .product-name { font-size: 17px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
 
   .product-name-en {
     font-family: 'Orbitron', monospace;
@@ -754,12 +652,7 @@
     font-weight: 300;
   }
 
-  .product-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 20px;
-  }
+  .product-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
 
   .tag {
     font-family: 'Space Mono', monospace;
@@ -785,9 +678,7 @@
 
   .product-card:hover .product-link { gap: 12px; }
 
-  .product-match-bar {
-    margin-bottom: 16px;
-  }
+  .product-match-bar { margin-bottom: 16px; }
 
   .match-bar-label {
     display: flex;
@@ -798,12 +689,7 @@
     margin-bottom: 6px;
   }
 
-  .match-bar-track {
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
+  .match-bar-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
 
   .match-bar-fill {
     height: 100%;
@@ -813,7 +699,6 @@
     width: 0%;
   }
 
-  /* Profile pill */
   .profile-pill {
     display: inline-flex;
     align-items: center;
@@ -826,8 +711,7 @@
   }
 
   .profile-avatar {
-    width: 40px;
-    height: 40px;
+    width: 40px; height: 40px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent2), var(--accent3));
     display: flex;
@@ -837,64 +721,15 @@
   }
 
   .profile-info { text-align: left; }
+  .profile-role { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .profile-org { font-size: 11px; color: var(--text-muted); font-family: 'Space Mono', monospace; }
 
-  .profile-role {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 2px;
-  }
-
-  .profile-org {
-    font-size: 11px;
-    color: var(--text-muted);
-    font-family: 'Space Mono', monospace;
-  }
-
-  /* Restart button */
-  .btn-restart {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 14px 36px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: 'Orbitron', monospace;
-    font-size: 12px;
-    letter-spacing: 2px;
-    transition: all 0.3s;
-  }
-
-  .btn-restart:hover {
-    border-color: var(--text-muted);
-    color: var(--text);
-    transform: translateY(-2px);
-  }
-
-  /* ===== BOTTOM ACTION BAR ===== */
   .result-actions {
     display: flex;
     gap: 12px;
     margin-bottom: 40px;
     flex-wrap: wrap;
     justify-content: center;
-  }
-
-  @media (max-width: 600px) {
-    .result-actions {
-      flex-direction: column;
-      align-items: stretch;
-      width: 100%;
-      max-width: 400px;
-    }
-    .result-actions .btn-share,
-    .result-actions .btn-restart {
-      width: 100%;
-      justify-content: center;
-      text-align: center;
-    }
-    .form-row { grid-template-columns: 1fr; }
-    .gate-row { grid-template-columns: 1fr; }
-    .gate-form { padding: 20px; }
   }
 
   .btn-share {
@@ -926,6 +761,25 @@
     background: rgba(0,255,136,0.1);
     border-color: rgba(0,255,136,0.4);
     color: var(--success);
+  }
+
+  .btn-restart {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 14px 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+  }
+
+  .btn-restart:hover {
+    border-color: var(--text-muted);
+    color: var(--text);
+    transform: translateY(-2px);
   }
 
   /* ===== CONTACT FORM ===== */
@@ -1021,7 +875,6 @@
 
   .form-note { font-size: 11px; color: var(--text-muted); margin-bottom: 20px; display: flex; align-items: center; gap: 6px; }
 
-  /* Pre-filled info */
   .prefilled-info {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -1039,11 +892,7 @@
     margin-bottom: 10px;
   }
 
-  .prefilled-fields {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+  .prefilled-fields { display: flex; flex-wrap: wrap; gap: 8px; }
 
   .prefilled-chip {
     display: inline-flex;
@@ -1057,10 +906,7 @@
     color: var(--text-muted);
   }
 
-  .prefilled-chip span {
-    color: var(--text);
-    font-weight: 500;
-  }
+  .prefilled-chip span { color: var(--text); font-weight: 500; }
 
   .btn-submit {
     width: 100%;
@@ -1082,33 +928,46 @@
   .form-success-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--success); }
   .form-success-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
 
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 32px; left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--surface);
-    border: 1px solid rgba(0,212,255,0.4);
-    color: var(--accent);
+  /* ===== ANALYZING ===== */
+  .analyzing-screen { text-align: center; }
+
+  .hex-loader {
+    width: 80px; height: 80px;
+    margin: 0 auto 32px;
+    position: relative;
+    animation: spin 3s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hex-outer {
+    width: 80px; height: 80px;
+    border: 2px solid transparent;
+    border-top-color: var(--accent);
+    border-right-color: var(--accent2);
+    border-radius: 50%;
+  }
+
+  .hex-inner {
+    position: absolute;
+    top: 15px; left: 15px; right: 15px; bottom: 15px;
+    border: 2px solid transparent;
+    border-bottom-color: var(--accent3);
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite reverse;
+  }
+
+  .analyze-text {
     font-family: 'Space Mono', monospace;
-    font-size: 12px; letter-spacing: 1px;
-    padding: 12px 24px;
-    border-radius: 40px;
-    z-index: 9999;
-    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s;
-    opacity: 0; pointer-events: none;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    white-space: nowrap;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    animation: blink 1s ease infinite;
   }
 
-  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-  @media (max-width: 600px) {
-    .form-row { grid-template-columns: 1fr; }
-    .result-actions { flex-direction: column; align-items: center; }
-  }
-
-  /* ===== CONTACT GATE SCREEN ===== */
+  /* ===== GATE ===== */
   .gate-container {
     width: 100%;
     max-width: 560px;
@@ -1117,9 +976,7 @@
   }
 
   .gate-icon {
-    font-size: 52px;
-    margin-bottom: 20px;
-    display: block;
+    font-size: 52px; margin-bottom: 20px; display: block;
     animation: bounceIn 0.6s cubic-bezier(0.34,1.56,0.64,1);
   }
 
@@ -1143,8 +1000,7 @@
 
   .gate-eyebrow::before, .gate-eyebrow::after {
     content: '';
-    width: 30px;
-    height: 1px;
+    width: 30px; height: 1px;
     background: var(--success);
     opacity: 0.5;
   }
@@ -1224,98 +1080,23 @@
   .gate-input.error { border-color: #ff4d4d; }
   .gate-input::placeholder { color: var(--text-dim); }
 
-  .gate-note {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-    margin-top: 4px;
-  }
+  .gate-note { font-size: 11px; color: var(--text-muted); margin-bottom: 20px; margin-top: 4px; }
 
   .gate-submit {
     width: 100%;
     padding: 16px;
     background: linear-gradient(135deg, var(--accent2), var(--accent));
-    border: none;
-    border-radius: 6px;
+    border: none; border-radius: 6px;
     color: var(--bg);
     font-family: 'Orbitron', monospace;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.3s;
+    font-size: 13px; font-weight: 700; letter-spacing: 2px;
+    cursor: pointer; transition: all 0.3s;
   }
 
-  .gate-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--glow-strong);
-  }
-
+  .gate-submit:hover { transform: translateY(-2px); box-shadow: var(--glow-strong); }
   .gate-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-  @media (max-width: 600px) {
-    .gate-row { grid-template-columns: 1fr; }
-    .gate-form { padding: 20px; }
-  }
-  .analyzing-screen {
-    text-align: center;
-  }
-
-  .hex-loader {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 32px;
-    position: relative;
-    animation: spin 3s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .hex-outer {
-    width: 80px;
-    height: 80px;
-    border: 2px solid transparent;
-    border-top-color: var(--accent);
-    border-right-color: var(--accent2);
-    border-radius: 50%;
-  }
-
-  .hex-inner {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    right: 15px;
-    bottom: 15px;
-    border: 2px solid transparent;
-    border-bottom-color: var(--accent3);
-    border-radius: 50%;
-    animation: spin 1.5s linear infinite reverse;
-  }
-
-  .analyze-text {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    letter-spacing: 3px;
-    color: var(--accent);
-    animation: blink 1s ease infinite;
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  /* Responsive */
-  @media (max-width: 600px) {
-    .options-grid { grid-template-columns: 1fr; }
-    .question-card { padding: 24px; }
-    header { padding: 16px 20px; }
-    .products-grid { grid-template-columns: 1fr; }
-    .profile-pill { flex-direction: column; text-align: center; }
-    .profile-info { text-align: center; }
-  }
-
-  /* Privacy block */
+  /* ===== PRIVACY ===== */
   .privacy-block {
     margin-top: 36px;
     width: 100%;
@@ -1335,24 +1116,19 @@
     cursor: pointer;
     font-size: 13px;
     color: var(--text-muted);
+    font-family: 'Noto Sans TC', sans-serif;
     transition: all 0.2s;
     width: 100%;
     text-align: left;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     -webkit-user-select: none;
+    outline: none;
   }
 
-  .privacy-toggle:hover {
-    border-color: rgba(0,212,255,0.3);
-    color: var(--text);
-  }
+  .privacy-toggle:hover { border-color: rgba(0,212,255,0.3); color: var(--text); }
 
-  .privacy-chevron {
-    transition: transform 0.3s;
-    font-size: 16px;
-  }
-
+  .privacy-chevron { transition: transform 0.3s; font-size: 16px; }
   .privacy-chevron.open { transform: rotate(180deg); }
 
   .privacy-content {
@@ -1368,25 +1144,11 @@
   }
 
   .privacy-content.open { display: block; animation: fadeIn 0.3s ease; }
-
   .privacy-content p { margin-bottom: 12px; }
-
-  .privacy-content ol {
-    padding-left: 20px;
-    margin-bottom: 12px;
-  }
-
-  .privacy-content ol li {
-    margin-bottom: 8px;
-  }
-
+  .privacy-content ol { padding-left: 20px; margin-bottom: 12px; }
+  .privacy-content ol li { margin-bottom: 8px; }
   .privacy-content strong { color: var(--text); }
-
-  .privacy-content a {
-    color: var(--accent);
-    text-decoration: none;
-  }
-
+  .privacy-content a { color: var(--accent); text-decoration: none; }
   .privacy-content a:hover { text-decoration: underline; }
 
   .privacy-agree {
@@ -1405,17 +1167,12 @@
     text-align: left;
   }
 
-  .privacy-agree:hover {
-    border-color: rgba(0,212,255,0.3);
-    color: var(--text);
-  }
+  .privacy-agree:hover { border-color: rgba(0,212,255,0.3); color: var(--text); }
 
   .privacy-agree input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+    width: 18px; height: 18px;
     accent-color: var(--accent);
-    cursor: pointer;
-    flex-shrink: 0;
+    cursor: pointer; flex-shrink: 0;
   }
 
   .privacy-agree.agreed {
@@ -1423,6 +1180,39 @@
     background: rgba(0,255,136,0.05);
     color: var(--success);
   }
+
+  /* ===== CORNER DECO ===== */
+  .corner-deco {
+    position: absolute;
+    width: 16px; height: 16px;
+  }
+  .corner-deco.tl { top: 12px; left: 12px; border-top: 1px solid var(--accent); border-left: 1px solid var(--accent); }
+  .corner-deco.tr { top: 12px; right: 12px; border-top: 1px solid var(--accent); border-right: 1px solid var(--accent); }
+  .corner-deco.bl { bottom: 12px; left: 12px; border-bottom: 1px solid var(--accent); border-left: 1px solid var(--accent); }
+  .corner-deco.br { bottom: 12px; right: 12px; border-bottom: 1px solid var(--accent); border-right: 1px solid var(--accent); }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface);
+    border: 1px solid rgba(0,212,255,0.4);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; letter-spacing: 1px;
+    padding: 12px 24px;
+    border-radius: 40px;
+    z-index: 9999;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s;
+    opacity: 0; pointer-events: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* Scanline overlay */
   body::after {
     content: '';
     position: fixed;
@@ -1438,16 +1228,20 @@
     z-index: 999;
   }
 
-  .corner-deco {
-    position: absolute;
-    width: 16px;
-    height: 16px;
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .question-card { padding: 24px; }
+    header { padding: 16px 20px; }
+    .products-grid { grid-template-columns: 1fr; }
+    .profile-pill { flex-direction: column; text-align: center; }
+    .profile-info { text-align: center; }
+    .form-row { grid-template-columns: 1fr; }
+    .gate-row { grid-template-columns: 1fr; }
+    .gate-form { padding: 20px; }
+    .result-actions { flex-direction: column; align-items: stretch; width: 100%; max-width: 400px; }
+    .result-actions .btn-share, .result-actions .btn-restart { width: 100%; justify-content: center; text-align: center; }
   }
-
-  .corner-deco.tl { top: 12px; left: 12px; border-top: 1px solid var(--accent); border-left: 1px solid var(--accent); }
-  .corner-deco.tr { top: 12px; right: 12px; border-top: 1px solid var(--accent); border-right: 1px solid var(--accent); }
-  .corner-deco.bl { bottom: 12px; left: 12px; border-bottom: 1px solid var(--accent); border-left: 1px solid var(--accent); }
-  .corner-deco.br { bottom: 12px; right: 12px; border-bottom: 1px solid var(--accent); border-right: 1px solid var(--accent); }
 </style>
 </head>
 <body>
@@ -1482,10 +1276,10 @@
 
       <!-- 個資聲明 -->
       <div class="privacy-block">
-        <div class="privacy-toggle" onclick="togglePrivacy()">
+        <button class="privacy-toggle" onclick="togglePrivacy()" type="button">
           <span>📋 個人資料保護法共同聲明</span>
           <span class="privacy-chevron" id="privacy-chevron">▾</span>
-        </div>
+        </button>
         <div class="privacy-content" id="privacy-content">
           <p>依個人資料保護法之規定以本聲明告知將如何處理本表單所蒐集之個人資料並徵求您同意。</p>
           <ol>
@@ -1495,8 +1289,8 @@
             <li><strong>就您的個人資料可以行使：</strong>請求查詢或閱覽、製給複製本、補充或更正、請求停止蒐集、處理及利用與請求刪除。</li>
           </ol>
           <p>若您欲執行上述權利時，請來信聯絡 <a href="mailto:service@jrsys.com.tw">service@jrsys.com.tw</a>，會有專人為您服務。</p>
+          <p style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border); color: var(--text);">我已閱讀上述由捷而思舉辦的這場『臺灣資安館』展攤行銷活動填寫問卷有關之蒐集個人資料告知事項，為保障您的權益，請選擇以下同意後，提交送出您的個人資料。</p>
         </div>
-        <!-- 同意勾選 -->
         <label class="privacy-agree" id="privacy-agree-label">
           <input type="checkbox" id="privacy-agree-check" onchange="toggleAgree()">
           <span>我已閱讀並同意上述個人資料保護法共同聲明</span>
@@ -1517,7 +1311,6 @@
       <div class="progress-track">
         <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
       </div>
-
       <div class="question-card" style="position:relative;">
         <div class="corner-deco tl"></div>
         <div class="corner-deco tr"></div>
@@ -1528,14 +1321,11 @@
         <div class="q-text" id="q-text"></div>
         <div class="q-sub" id="q-sub"></div>
       </div>
-
       <div class="options-grid" id="options-grid"></div>
-
       <div class="quiz-nav">
         <button class="btn-back" id="btn-back" onclick="prevQuestion()">← 上一題</button>
         <button class="btn-next" id="btn-next" onclick="nextQuestion()">NEXT</button>
       </div>
-
       <div class="hint-dots" id="hint-dots"></div>
     </div>
   </div>
@@ -1551,7 +1341,7 @@
     </div>
   </div>
 
-  <!-- CONTACT GATE SCREEN -->
+  <!-- GATE SCREEN -->
   <div class="screen" id="screen-gate">
     <div class="gate-container">
       <div class="gate-icon">🔐</div>
@@ -1610,7 +1400,6 @@
 
     <div class="products-grid" id="products-grid"></div>
 
-    <!-- Share + Restart buttons -->
     <div class="result-actions">
       <a class="btn-share" href="https://www.jrsys.com.tw" target="_blank">
         <span>🌐</span> 前往捷而思官網
@@ -1624,7 +1413,6 @@
       <button class="btn-restart" onclick="restart()">↺ 重新診斷</button>
     </div>
 
-    <!-- Contact Form accordion -->
     <div class="contact-section">
       <button class="contact-toggle" id="contact-toggle" onclick="toggleContact()">
         <div class="contact-toggle-left">
@@ -1638,7 +1426,6 @@
       </button>
       <div class="contact-form-wrap" id="contact-form-wrap">
         <div class="form-inner" id="form-inner">
-          <!-- Pre-filled info display -->
           <div class="prefilled-info" id="prefilled-info">
             <div class="prefilled-label">以下資訊將一併送出</div>
             <div class="prefilled-fields" id="prefilled-fields"></div>
@@ -1662,7 +1449,6 @@
   </div>
 </div>
 
-<!-- Toast notification -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1852,6 +1638,9 @@ const products = [
     url: 'https://www.jrsys.com.tw',
     keywords: ['pdfsign','doc','compliance','finance','gov','simple','urgent']
   },
+  {
+    id: 'privacy',
+    name: '個資存取稽核平台',
     nameEn: 'Privacy Audit',
     icon: '🔏',
     summary: '符合個資法要求的資料存取稽核與存證平台，自動記錄個資存取行為，提供合規報告與法律存證。',
@@ -1874,7 +1663,50 @@ let currentQ = 0;
 let answers = {};
 let userTags = [];
 
-// ==================== QUIZ LOGIC ====================
+// ==================== PARTICLES ====================
+function createParticles() {
+  const field = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.setProperty('--dur', (8 + Math.random() * 12) + 's');
+    p.style.setProperty('--delay', (Math.random() * 10) + 's');
+    p.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
+    p.style.width = (Math.random() > 0.7 ? 3 : 2) + 'px';
+    p.style.height = p.style.width;
+    field.appendChild(p);
+  }
+}
+
+createParticles();
+
+// ==================== PRIVACY ====================
+function togglePrivacy() {
+  const content = document.getElementById('privacy-content');
+  const chevron = document.getElementById('privacy-chevron');
+  content.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
+
+function toggleAgree() {
+  const checked = document.getElementById('privacy-agree-check').checked;
+  const btn = document.getElementById('btn-start');
+  const label = document.getElementById('privacy-agree-label');
+  if (checked) {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+    label.classList.add('agreed');
+  } else {
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+    btn.style.cursor = 'not-allowed';
+    label.classList.remove('agreed');
+  }
+}
+
+// ==================== QUIZ ====================
 function startQuiz() {
   showScreen('quiz');
   renderQuestion();
@@ -1882,7 +1714,6 @@ function startQuiz() {
 
 function renderQuestion() {
   const q = questions[currentQ];
-  
   document.getElementById('q-category').textContent = q.category;
   document.getElementById('q-icon').textContent = q.icon;
   document.getElementById('q-text').textContent = q.text;
@@ -1891,23 +1722,22 @@ function renderQuestion() {
   document.getElementById('progress-fill').style.width = `${(currentQ / questions.length) * 100}%`;
   document.getElementById('btn-back').style.visibility = currentQ === 0 ? 'hidden' : 'visible';
 
-  // Options
   const grid = document.getElementById('options-grid');
   grid.innerHTML = '';
   const count = q.options.length;
   grid.className = 'options-grid' + (count >= 5 ? ' cols-3' : '');
+
   q.options.forEach((opt, i) => {
     const btn = document.createElement('button');
     const isSelected = answers[q.id] === opt.value;
     btn.className = 'option-btn' + (isSelected ? ' selected' : '');
-    const customKey = opt.customKey || (q.id + '_custom');
     const inputId = `custom-input-${q.id}-${opt.value}`;
     btn.innerHTML = `
       <div class="option-icon-wrap">${opt.icon}</div>
       <div class="option-content">
         <div class="option-title">${opt.title}</div>
         ${opt.isCustom
-          ? `<input class="custom-input" id="${inputId}" type="text" placeholder="請輸入..." value="${answers[customKey] || ''}" onclick="event.stopPropagation()">`
+          ? `<input class="custom-input" id="${inputId}" type="text" placeholder="請輸入..." value="${answers[opt.customKey] || ''}" onclick="event.stopPropagation()">`
           : `<div class="option-desc">${opt.desc}</div>`
         }
       </div>
@@ -1924,19 +1754,16 @@ function renderQuestion() {
     grid.appendChild(btn);
   });
 
-  // Listen for typing in any custom inputs on this question
   setTimeout(() => {
     q.options.filter(o => o.isCustom).forEach(opt => {
-      const customKey = opt.customKey || (q.id + '_custom');
       const inputId = `custom-input-${q.id}-${opt.value}`;
       const inp = document.getElementById(inputId);
       if (inp) {
-        inp.addEventListener('input', (e) => { answers[customKey] = e.target.value; });
+        inp.addEventListener('input', (e) => { answers[opt.customKey] = e.target.value; });
       }
     });
   }, 100);
 
-  // Hint dots
   const dots = document.getElementById('hint-dots');
   dots.innerHTML = '';
   questions.forEach((_, i) => {
@@ -1984,26 +1811,31 @@ function prevQuestion() {
 // ==================== ANALYSIS ====================
 function analyzeResults() {
   showScreen('analyzing');
-
-  // Collect all tags from answers
   userTags = [];
   Object.entries(answers).forEach(([qId, value]) => {
     const q = questions.find(q => q.id === qId);
     const opt = q?.options.find(o => o.value === value);
     if (opt) userTags.push(...opt.tags);
   });
-
   setTimeout(() => showScreen('gate'), 2000);
 }
 
+function scoreProduct(product) {
+  let score = 0;
+  product.keywords.forEach(kw => { if (userTags.includes(kw)) score += 2; });
+  userTags.forEach(tag => { if (product.keywords.includes(tag)) score += 1; });
+  return score;
+}
+
+// ==================== GATE ====================
 function gateSubmit() {
   const name = document.getElementById('g-name').value.trim();
   const company = document.getElementById('g-company').value.trim();
   const email = document.getElementById('g-email').value.trim();
+  const phone = document.getElementById('g-phone').value.trim();
 
-  // Validate
   let hasError = false;
-  [['g-name', name], ['g-company', company], ['g-email', email]].forEach(([id, val]) => {
+  [['g-name', name], ['g-company', company], ['g-email', email], ['g-phone', phone]].forEach(([id, val]) => {
     const el = document.getElementById(id);
     if (!val) {
       el.classList.add('error');
@@ -2011,13 +1843,6 @@ function gateSubmit() {
       hasError = true;
     }
   });
-
-  const phone = document.getElementById('g-phone').value.trim();
-  if (!phone) {
-    document.getElementById('g-phone').classList.add('error');
-    document.getElementById('g-phone').addEventListener('input', () => document.getElementById('g-phone').classList.remove('error'), { once: true });
-    hasError = true;
-  }
 
   if (hasError) { showToast('⚠ 請填寫姓名、公司、Email 與聯絡電話'); return; }
 
@@ -2028,19 +1853,12 @@ function gateSubmit() {
     return;
   }
 
-  // Save to answers for later use in contact form
-  answers['_name'] = name;
-  answers['_company'] = company;
-  answers['_email'] = email;
-  answers['_jobtitle'] = document.getElementById('g-jobtitle').value.trim();
-
   const btn = document.getElementById('gate-submit-btn');
   btn.disabled = true;
   btn.textContent = '處理中...';
 
   const jobtitle = document.getElementById('g-jobtitle').value.trim();
 
-  // Build answer labels
   const answerLabels = {
     industry: { finance:'金融業', 'gov-health':'醫療／政府', manufacturing:'製造／工業', tech:'科技／服務業', other: answers['industry_custom'] || '其他' },
     size: { small:'小型 (<50人)', medium:'中型 (50–300人)', large:'大型 (300–1000人)', enterprise:'企業級 (1000+人)' },
@@ -2050,7 +1868,6 @@ function gateSubmit() {
     urgency: { urgent:'立即 (1個月內)', short:'短期 (1–3個月)', medium:'中期 (3–6個月)', long:'長期規劃 (6個月以上)' }
   };
 
-  // 先計算推薦產品，一起送出
   const scored = products.map(p => ({ ...p, score: scoreProduct(p) }));
   scored.sort((a, b) => b.score - a.score);
   const topProds = scored.slice(0, 3).map(p => p.name).join('、');
@@ -2090,25 +1907,13 @@ function gateSubmit() {
   });
 }
 
-function scoreProduct(product) {
-  let score = 0;
-  product.keywords.forEach(kw => {
-    if (userTags.includes(kw)) score += 2;
-  });
-  // Bonus for exact tag matches
-  userTags.forEach(tag => {
-    if (product.keywords.includes(tag)) score += 1;
-  });
-  return score;
-}
-
+// ==================== RESULTS ====================
 function showResults() {
   const scored = products.map(p => ({ ...p, score: scoreProduct(p) }));
   scored.sort((a, b) => b.score - a.score);
   const maxScore = scored[0].score || 1;
   const topProducts = scored.slice(0, 3);
 
-  // Profile detection
   let profile = profileMap.default;
   const ind = answers.industry;
   const pain = answers.pain;
@@ -2154,7 +1959,6 @@ function showResults() {
     `;
     grid.appendChild(card);
 
-    // Animate bar
     setTimeout(() => {
       const bar = document.getElementById(`bar-${p.id}`);
       if (bar) bar.style.width = `${matchPct}%`;
@@ -2162,6 +1966,19 @@ function showResults() {
   });
 
   showScreen('result');
+}
+
+// ==================== HELPERS ====================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 function restart() {
@@ -2174,19 +1991,13 @@ function restart() {
   });
   const btn = document.getElementById('gate-submit-btn');
   if (btn) { btn.disabled = false; btn.textContent = '查看我的推薦方案 →'; }
-  // Reset privacy agree
   const agreeCheck = document.getElementById('privacy-agree-check');
   if (agreeCheck) agreeCheck.checked = false;
   toggleAgree();
   showScreen('intro');
 }
 
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(`screen-${name}`).classList.add('active');
-}
-
-// ==================== GOOGLE SHEETS SUBMIT ====================
+// ==================== GOOGLE SHEETS ====================
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxRy6UthJfH33EtFW63fgTiu355x630JCKND42371v6R1PlXcowfqVsLc3ITl_m1vz-pQ/exec';
 
 function sendToSheets(data) {
@@ -2194,57 +2005,14 @@ function sendToSheets(data) {
   Object.entries(data).forEach(([k, v]) => params.append(k, v || ''));
   const img = new Image();
   img.src = SHEETS_URL + '?' + params.toString();
-  // 回傳一個假的 resolved promise 讓後續 .then(r => r.ok) 正常執行
   return Promise.resolve({ ok: true });
 }
-function createParticles() {
-  const field = document.getElementById('particles');
-  for (let i = 0; i < 30; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    p.style.left = Math.random() * 100 + '%';
-    p.style.setProperty('--dur', (8 + Math.random() * 12) + 's');
-    p.style.setProperty('--delay', (Math.random() * 10) + 's');
-    p.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
-    p.style.width = (Math.random() > 0.7 ? 3 : 2) + 'px';
-    p.style.height = p.style.width;
-    field.appendChild(p);
-  }
-}
-
-function toggleAgree() {
-  const checked = document.getElementById('privacy-agree-check').checked;
-  const btn = document.getElementById('btn-start');
-  const label = document.getElementById('privacy-agree-label');
-  if (checked) {
-    btn.disabled = false;
-    btn.style.opacity = '1';
-    btn.style.cursor = 'pointer';
-    label.classList.add('agreed');
-    // 自動展開個資聲明讓使用者看到
-  } else {
-    btn.disabled = true;
-    btn.style.opacity = '0.4';
-    btn.style.cursor = 'not-allowed';
-    label.classList.remove('agreed');
-  }
-}
-
-function togglePrivacy() {
-  const content = document.getElementById('privacy-content');
-  const chevron = document.getElementById('privacy-chevron');
-  content.classList.toggle('open');
-  chevron.classList.toggle('open');
-}
-
-createParticles();
 
 // ==================== SHARE ====================
 function copyShareText() {
   const prods = Array.from(document.querySelectorAll('.product-name')).map(el => el.textContent).join('、');
   const role = document.getElementById('profile-role').textContent;
   const text = `【捷而思資安產品推薦】\n我的資安輪廓：${role}\n推薦產品：${prods}\n\n立即探索適合您的資安方案：\nhttps://www.jrsys.com.tw`;
-
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('btn-copy');
     btn.classList.add('copied');
@@ -2254,9 +2022,7 @@ function copyShareText() {
       btn.classList.remove('copied');
       btn.innerHTML = '<span>📋</span> 複製推薦結果';
     }, 3000);
-  }).catch(() => {
-    showToast('⚠ 請手動複製頁面網址');
-  });
+  }).catch(() => { showToast('⚠ 請手動複製頁面網址'); });
 }
 
 function shareNative() {
@@ -2269,18 +2035,10 @@ function shareNative() {
       url: 'https://www.jrsys.com.tw'
     }).catch(() => {});
   } else {
-    // fallback: copy URL
     navigator.clipboard.writeText('https://www.jrsys.com.tw').then(() => {
       showToast('✓ 網址已複製到剪貼簿');
     });
   }
-}
-
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 // ==================== CONTACT FORM ====================
@@ -2292,7 +2050,6 @@ function toggleContact() {
   toggle.classList.toggle('open');
   chevron.classList.toggle('open');
 
-  // Populate prefilled chips on first open
   const fields = document.getElementById('prefilled-fields');
   if (fields && !fields.dataset.filled) {
     fields.dataset.filled = '1';
@@ -2314,7 +2071,6 @@ function submitForm() {
   const btn = document.querySelector('.btn-submit');
   btn.disabled = true;
   btn.textContent = '送出中...';
-
   const al = answers['_answerLabels'] || {};
 
   sendToSheets({
