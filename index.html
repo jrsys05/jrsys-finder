@@ -1107,81 +1107,71 @@
     z-index: 2;
   }
 
-  .privacy-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  .privacy-content-always {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 20px;
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--text-muted);
-    font-family: 'Noto Sans TC', sans-serif;
-    transition: all 0.2s;
-    width: 100%;
-    text-align: left;
-    -webkit-tap-highlight-color: rgba(0,212,255,0.1);
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
-    outline: none;
-    position: relative;
-    z-index: 2;
-  }
-
-  .privacy-toggle:hover { border-color: rgba(0,212,255,0.3); color: var(--text); }
-
-  .privacy-chevron { transition: transform 0.3s; font-size: 16px; }
-  .privacy-chevron.open { transform: rotate(180deg); }
-
-  .privacy-content {
-    display: none;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-top: none;
-    border-radius: 0 0 8px 8px;
+    border-radius: 8px 8px 0 0;
     padding: 20px;
     font-size: 12px;
     color: var(--text-muted);
     line-height: 1.8;
+    border-bottom: none;
   }
 
-  .privacy-content.open { display: block; animation: fadeIn 0.3s ease; }
-  .privacy-content p { margin-bottom: 12px; }
-  .privacy-content ol { padding-left: 20px; margin-bottom: 12px; }
-  .privacy-content ol li { margin-bottom: 8px; }
-  .privacy-content strong { color: var(--text); }
-  .privacy-content a { color: var(--accent); text-decoration: none; }
-  .privacy-content a:hover { text-decoration: underline; }
+  .privacy-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .privacy-content-always p { margin-bottom: 10px; }
+  .privacy-content-always ol { padding-left: 20px; margin-bottom: 10px; }
+  .privacy-content-always ol li { margin-bottom: 6px; }
+  .privacy-content-always strong { color: var(--text); }
+  .privacy-content-always a { color: var(--accent); text-decoration: none; }
+  .privacy-content-always a:hover { text-decoration: underline; }
+
+  .privacy-note-bottom {
+    margin-top: 14px !important;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    color: var(--text) !important;
+  }
 
   .privacy-agree {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 12px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 20px;
+    border-radius: 0 0 8px 8px;
+    padding: 16px 20px;
     cursor: pointer;
     font-size: 13px;
     color: var(--text-muted);
     transition: all 0.2s;
     text-align: left;
     touch-action: manipulation;
-    -webkit-tap-highlight-color: rgba(0,212,255,0.1);
+    -webkit-tap-highlight-color: rgba(0,212,255,0.15);
     position: relative;
     z-index: 2;
+    border-top: 1px solid rgba(0,212,255,0.2);
   }
 
-  .privacy-agree:hover { border-color: rgba(0,212,255,0.3); color: var(--text); }
+  .privacy-agree:hover { background: rgba(0,212,255,0.04); color: var(--text); }
 
   .privacy-agree input[type="checkbox"] {
-    width: 18px; height: 18px;
+    width: 20px;
+    height: 20px;
     accent-color: var(--accent);
-    cursor: pointer; flex-shrink: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    touch-action: manipulation;
   }
 
   .privacy-agree.agreed {
@@ -1285,11 +1275,8 @@
 
       <!-- 個資聲明 -->
       <div class="privacy-block">
-        <button class="privacy-toggle" onclick="togglePrivacy()" type="button">
-          <span>📋 個人資料保護法共同聲明</span>
-          <span class="privacy-chevron" id="privacy-chevron">▾</span>
-        </button>
-        <div class="privacy-content" id="privacy-content">
+        <div class="privacy-content-always">
+          <div class="privacy-header">📋 個人資料保護法共同聲明</div>
           <p>依個人資料保護法之規定以本聲明告知將如何處理本表單所蒐集之個人資料並徵求您同意。</p>
           <ol>
             <li><strong>個人資料蒐集之目的：</strong>本表單所蒐集之個人資料是基於臺灣資安大會臺灣資安館展攤行銷活動填寫調查問卷各項相關業務所需。</li>
@@ -1298,7 +1285,7 @@
             <li><strong>就您的個人資料可以行使：</strong>請求查詢或閱覽、製給複製本、補充或更正、請求停止蒐集、處理及利用與請求刪除。</li>
           </ol>
           <p>若您欲執行上述權利時，請來信聯絡 <a href="mailto:service@jrsys.com.tw">service@jrsys.com.tw</a>，會有專人為您服務。</p>
-          <p style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border); color: var(--text);">我已閱讀上述由捷而思舉辦的這場『臺灣資安館』展攤行銷活動填寫問卷有關之蒐集個人資料告知事項，為保障您的權益，請選擇以下同意後，提交送出您的個人資料。</p>
+          <p class="privacy-note-bottom">我已閱讀上述由捷而思舉辦的這場『臺灣資安館』展攤行銷活動填寫問卷有關之蒐集個人資料告知事項，為保障您的權益，請選擇以下同意後，提交送出您的個人資料。</p>
         </div>
         <label class="privacy-agree" id="privacy-agree-label">
           <input type="checkbox" id="privacy-agree-check" onchange="toggleAgree()">
@@ -1691,24 +1678,6 @@ function createParticles() {
 createParticles();
 
 // ==================== PRIVACY ====================
-function togglePrivacy() {
-  const content = document.getElementById('privacy-content');
-  const chevron = document.getElementById('privacy-chevron');
-  content.classList.toggle('open');
-  chevron.classList.toggle('open');
-}
-
-// Ensure touch devices can trigger the privacy toggle
-document.addEventListener('DOMContentLoaded', function() {
-  const privBtn = document.querySelector('.privacy-toggle');
-  if (privBtn) {
-    privBtn.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      togglePrivacy();
-    }, { passive: false });
-  }
-});
-
 function toggleAgree() {
   const checked = document.getElementById('privacy-agree-check').checked;
   const btn = document.getElementById('btn-start');
